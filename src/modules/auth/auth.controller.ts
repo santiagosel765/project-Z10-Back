@@ -6,6 +6,7 @@ import {
   Res,
   Req,
   UseGuards,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { type Request, type Response } from 'express';
@@ -16,6 +17,7 @@ import {
   LoginRequestDto,
   LoginResponseDto,
   MeResponseDto,
+  RefreshRequestDto,
   RefreshResponseDto,
   ValidateResponseDto,
 } from './dto/auth.dto';
@@ -81,14 +83,36 @@ export class AuthController {
   @ApiOperation({ summary: 'Refresh tokens' })
   @ApiOkResponse({ type: RefreshResponseDto })
   @ApiUnauthorizedResponse({ description: 'Invalid or expired refresh token' })
+  @ApiBody({
+    type: RefreshRequestDto,
+    required: false,
+    description:
+      'Opcional: refresh token en el body. También se puede enviar en cookie httpOnly o en el header Authorization: Bearer <token>.',
+  })
+  // Soporta refresh token desde cookie httpOnly, header Authorization: Bearer <token>
+  // o body JSON (refresh_token / refreshToken) para compatibilidad con herramientas como Postman.
+  // El SDK zenit-sdk utiliza principalmente el header Authorization.
   @Post('refresh')
   async refresh(
     @Req() req: RequestWithCookies,
     @Res({ passthrough: true }) res: Response,
+    @Body() body?: RefreshRequestDto,
   ): Promise<RefreshResponseDto> {
-    const refreshToken =
-      req.cookies[refreshCookieName] ||
-      req.headers.authorization?.split(' ')?.[1];
+    const fromBody = body?.refresh_token || body?.refreshToken;
+
+    const authHeader = req.headers.authorization;
+    const fromHeader =
+      authHeader && authHeader.startsWith('Bearer ')
+        ? authHeader.split(' ')[1]
+        : undefined;
+
+    const fromCookie = req.cookies?.[refreshCookieName];
+
+    const refreshToken = fromBody || fromHeader || fromCookie;
+
+    if (!refreshToken) {
+      throw new UnauthorizedException('REFRESH_TOKEN_REQUIRED');
+    }
 
     const tokens = await this.authService.refreshToken(refreshToken);
 
