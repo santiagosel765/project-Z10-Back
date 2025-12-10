@@ -46,3 +46,11 @@ export class ValidateResponseDto {
   @ApiProperty({ description: 'Indicates if the access token is valid' })
   valid: boolean;
 }
+
+export class RefreshRequestDto {
+  @ApiPropertyOptional({ description: 'Refresh token', example: 'jwt.refresh' })
+  refresh_token?: string;
+
+  @ApiPropertyOptional({ description: 'Refresh token', example: 'jwt.refresh' })
+  refreshToken?: string;
+}
