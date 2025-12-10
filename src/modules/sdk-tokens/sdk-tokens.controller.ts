@@ -20,11 +20,11 @@ import { SdkTokensService } from './sdk-tokens.service';
 import { CreateSdkClientDto } from './dto/create-sdk-client.dto';
 import { UpdateSdkClientDto } from './dto/update-sdk-client.dto';
 import { CreateSdkTokenDto } from './dto/create-sdk-token.dto';
-import { AuthGuard } from 'src/common/guards/auth/auth.guard';
+import { JwtAuthGuard } from 'src/common/guards/auth/jwt.guard';
 
 @ApiTags('sdk-tokens')
 @ApiBearerAuth()
-@UseGuards(AuthGuard)
+@UseGuards(JwtAuthGuard)
 @Controller('sdk-tokens')
 export class SdkTokensController {
   constructor(private readonly sdkTokensService: SdkTokensService) {}

@@ -16,7 +16,7 @@ import { ConfigModule } from '@nestjs/config';
     JwtModule.register({
       global: true,
       secret: envs.jwtAccessSecret,
-      signOptions: { expiresIn: '6000s' }
+      signOptions: { expiresIn: `${envs.jwtAccessExpiration || 3600}s` }
     })
   ]
 })

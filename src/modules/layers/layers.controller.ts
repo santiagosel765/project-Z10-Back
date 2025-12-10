@@ -22,10 +22,11 @@ import { UploadLayerDto } from './dto/upload-layer.dto';
 import { UpdateLayerDto } from './dto/update-layer.dto';
 import type { Response } from 'express';
 import { ApiOperation, ApiParam, ApiQuery, ApiResponse } from '@nestjs/swagger';
-import { AuthGuard } from 'src/common/guards/auth/auth.guard';
 import { GetUser } from '../auth/decorators/get-user.decorator';
+import { JwtAuthGuard } from 'src/common/guards/auth/jwt.guard';
 
 
+@UseGuards(JwtAuthGuard)
 @Controller('layers')
 export class LayersController {
 
@@ -33,7 +34,6 @@ export class LayersController {
 
   constructor(private readonly layersService: LayersService) {}
 
-  @UseGuards(AuthGuard)
   @Post()
   @UseInterceptors(FileInterceptor('file'))
   create(
@@ -1167,7 +1167,6 @@ export class LayersController {
   }
 
 
-  @UseGuards(AuthGuard)
   @Patch(':id')
   @ApiOperation({
     summary: 'Actualizar capa',
@@ -1225,7 +1224,6 @@ export class LayersController {
     return this.layersService.updateLayer(id, userId, updateLayerDto);
   }
 
-  @UseGuards(AuthGuard)
   @Delete(':id')
   @ApiOperation({
     summary: 'Eliminar capa (soft delete)',
