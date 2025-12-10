@@ -234,7 +234,7 @@ export class SdkTokensService {
    */
   async validateRawToken(rawToken: string): Promise<SdkTokenValidationResult> {
     if (!rawToken || !rawToken.startsWith('znt_')) {
-      return { valid: false, reason: 'invalid_format' };
+      return { valid: false, reason: 'SDK_TOKEN_INVALID' };
     }
 
     const tokenPrefix = this.buildTokenPrefix(rawToken);
@@ -248,7 +248,7 @@ export class SdkTokensService {
       .getMany();
 
     if (!tokens.length) {
-      return { valid: false, reason: 'not_found' };
+      return { valid: false, reason: 'SDK_TOKEN_INVALID' };
     }
 
     const activeTokens = tokens.filter(
@@ -256,7 +256,7 @@ export class SdkTokensService {
     );
 
     if (!activeTokens.length) {
-      return { valid: false, reason: 'expired' };
+      return { valid: false, reason: 'SDK_TOKEN_EXPIRED' };
     }
 
     for (const sdkToken of activeTokens) {
@@ -267,7 +267,7 @@ export class SdkTokensService {
       }
 
       if (!sdkToken.client || !sdkToken.client.isActive) {
-        return { valid: false, reason: 'client_inactive' };
+        return { valid: false, reason: 'SDK_CLIENT_INACTIVE' };
       }
 
       sdkToken.lastUsedAt = new Date();
@@ -282,7 +282,7 @@ export class SdkTokensService {
       };
     }
 
-    return { valid: false, reason: 'invalid_token' };
+    return { valid: false, reason: 'SDK_TOKEN_INVALID' };
   }
 
   /**

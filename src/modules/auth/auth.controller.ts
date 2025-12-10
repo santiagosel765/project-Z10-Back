@@ -3,22 +3,31 @@ import {
   Get,
   Post,
   Body,
-  Patch,
-  Param,
-  Delete,
   Res,
   Req,
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { LoginUserDto } from './dto/login-user.dto';
 import { type Request, type Response } from 'express';
 import { envs } from 'src/config/envs';
 import { JwtAuthGuard } from 'src/common/guards/auth/jwt.guard';
 import { GetUser } from './decorators/get-user.decorator';
-import { MeResponseDto, ValidateResponseDto } from './dto/auth.dto';
+import {
+  LoginRequestDto,
+  LoginResponseDto,
+  MeResponseDto,
+  RefreshResponseDto,
+  ValidateResponseDto,
+} from './dto/auth.dto';
 
 import { SkipThrottle } from '@nestjs/throttler';
+import {
+  ApiBody,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 
 type RequestWithCookies = Request & { cookies: Record<string, string> };
 
@@ -37,15 +46,23 @@ const baseCookieOpts = {
 const accessCookieOpts = baseCookieOpts;
 const refreshCookieOpts = baseCookieOpts;
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @ApiOperation({
+    summary: 'User login',
+    description: 'Authenticate user and issue access/refresh tokens.',
+  })
+  @ApiBody({ type: LoginRequestDto })
+  @ApiOkResponse({ type: LoginResponseDto })
+  @ApiUnauthorizedResponse({ description: 'Invalid credentials' })
   @Post('login')
   async login(
-    @Body() loginUserDto: LoginUserDto,
+    @Body() loginUserDto: LoginRequestDto,
     @Res({ passthrough: true }) res: Response,
-  ) {
+  ): Promise<LoginResponseDto> {
     const data = await this.authService.login(loginUserDto);
 
     res.cookie(accessCookieName, data.accessToken, {
@@ -61,11 +78,14 @@ export class AuthController {
   }
 
   @SkipThrottle()
+  @ApiOperation({ summary: 'Refresh tokens' })
+  @ApiOkResponse({ type: RefreshResponseDto })
+  @ApiUnauthorizedResponse({ description: 'Invalid or expired refresh token' })
   @Post('refresh')
   async refresh(
     @Req() req: RequestWithCookies,
     @Res({ passthrough: true }) res: Response,
-  ) {
+  ): Promise<RefreshResponseDto> {
     const refreshToken =
       req.cookies[refreshCookieName] ||
       req.headers.authorization?.split(' ')?.[1];
@@ -81,10 +101,13 @@ export class AuthController {
       maxAge: Number(envs.jwtRefreshExpiration) * 1000,
     });
 
-    return { ok: true };
+    return tokens;
   }
 
   @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Get current authenticated user' })
+  @ApiOkResponse({ type: MeResponseDto })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @Get('me')
   async me(@GetUser() user: any): Promise<MeResponseDto> {
     return {
@@ -96,6 +119,9 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Validate current access token' })
+  @ApiOkResponse({ type: ValidateResponseDto })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @Get('validate')
   async validate(): Promise<ValidateResponseDto> {
     return { valid: true };
