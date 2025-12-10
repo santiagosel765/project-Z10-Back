@@ -43,10 +43,15 @@ export class AuthService {
     if (!refreshToken)
       throw new UnauthorizedException('Regresh token no válido');
 
-    const payload = this.jwtService.verify(refreshToken);
+    const payload = await this.jwtService.verifyAsync(refreshToken, {
+      secret: envs.jwtRefreshSecret,
+    });
     const dbUser = await this.userService.findUserByEmail(payload.email);
-    
+
     if (!payload?.sub)
+      throw new UnauthorizedException('Token inválido');
+
+    if (payload?.type !== 'refresh')
       throw new UnauthorizedException('Token inválido');
 
 
@@ -64,31 +69,31 @@ export class AuthService {
       email: user.email,
       employeeCode: user.employeeCode,
       roles,
-      type: 'access'
+      type: 'access',
     };
-    
-    
+
+
     const refreshPayload = {
-      sub: user.id,           
+      sub: user.id,
       userId: user.id,
       email: user.email,
       type: 'refresh',
-      version: 1
     };
-    
+
     const accessToken = this.jwtService.sign(accessPayload, {
       secret: envs.jwtAccessSecret,
-      
+      expiresIn: `${envs.jwtAccessExpiration || 3600}s`,
     });
-    
+
     const refreshToken = this.jwtService.sign(refreshPayload, {
       secret: envs.jwtRefreshSecret,
-    })
-    
-    
+      expiresIn: `${envs.jwtRefreshExpiration || 604800}s`,
+    });
+
+
     return {
       accessToken,
-      refreshToken
+      refreshToken,
     };
   }
 }

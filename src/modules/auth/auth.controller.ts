@@ -8,12 +8,15 @@ import {
   Delete,
   Res,
   Req,
+  UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateUserDto } from '../users/dto/create-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
-import { type Response } from 'express';
+import { type Request, type Response } from 'express';
 import { envs } from 'src/config/envs';
+import { JwtAuthGuard } from 'src/common/guards/auth/jwt.guard';
+import { GetUser } from './decorators/get-user.decorator';
+import { MeResponseDto, ValidateResponseDto } from './dto/auth.dto';
 
 import { SkipThrottle } from '@nestjs/throttler';
 
@@ -63,7 +66,9 @@ export class AuthController {
     @Req() req: RequestWithCookies,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const refreshToken = req.cookies[refreshCookieName];
+    const refreshToken =
+      req.cookies[refreshCookieName] ||
+      req.headers.authorization?.split(' ')?.[1];
 
     const tokens = await this.authService.refreshToken(refreshToken);
 
@@ -77,5 +82,22 @@ export class AuthController {
     });
 
     return { ok: true };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('me')
+  async me(@GetUser() user: any): Promise<MeResponseDto> {
+    return {
+      id: user?.userId ?? user?.sub,
+      email: user?.email,
+      roles: user?.roles ?? [],
+      employeeCode: user?.employeeCode,
+    };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('validate')
+  async validate(): Promise<ValidateResponseDto> {
+    return { valid: true };
   }
 }

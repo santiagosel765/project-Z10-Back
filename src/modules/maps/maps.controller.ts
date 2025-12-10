@@ -16,19 +16,19 @@ import { ApiTags, ApiOperation, ApiResponse, ApiQuery, ApiParam } from '@nestjs/
 import { MapsService } from './maps.service';
 import { CreateMapDto } from './dto/create-map.dto';
 import { UpdateMapDto } from './dto/update-map.dto';
-import { AuthGuard } from 'src/common/guards/auth/auth.guard';
 import { GetUser } from '../auth/decorators/get-user.decorator';
 import { Public } from 'src/common/decorators/public.decorator';
+import { JwtAuthGuard } from 'src/common/guards/auth/jwt.guard';
 
 
 @ApiTags('maps')
+@UseGuards(JwtAuthGuard)
 @Controller('maps')
 export class MapsController {
 
   private logger = new Logger(MapsController.name);
 
   constructor(private readonly mapsService: MapsService) {}
-  @UseGuards(AuthGuard)
   @Post()
   @ApiOperation({ summary: 'Create a new map' })
   @ApiResponse({ status: 201, description: 'Map created successfully' })
@@ -42,7 +42,6 @@ export class MapsController {
     return this.mapsService.create(createMapDto, userId);
   }
 
-  @UseGuards(AuthGuard)
   @Get()
   @ApiOperation({ summary: 'Get all maps with pagination' })
   @ApiQuery({ name: 'page', required: false, type: Number, example: 1 })
@@ -55,7 +54,6 @@ export class MapsController {
     return this.mapsService.findAll(page, limit);
   }
 
-  @UseGuards(AuthGuard)
   @Get('default')
   @ApiOperation({ summary: 'Get the default map' })
   @ApiResponse({ status: 200, description: 'Default map' })
@@ -64,7 +62,6 @@ export class MapsController {
     return this.mapsService.getDefaultMap();
   }
 
-  @UseGuards(AuthGuard)
   @Get('search')
   @ApiOperation({ summary: 'Search maps by name or description' })
   @ApiQuery({ name: 'q', required: false, type: String })
@@ -81,7 +78,6 @@ export class MapsController {
     return this.mapsService.searchMaps(query, mapType, page, limit);
   }
 
-  @UseGuards(AuthGuard)
   @Get('stats')
   @ApiOperation({ summary: 'Get map statistics' })
   @ApiResponse({ status: 200, description: 'Map statistics' })
@@ -102,7 +98,6 @@ export class MapsController {
     return this.mapsService.findOne(id, includeLayers);
   }
 
-  @UseGuards(AuthGuard)
   @Patch(':id')
   @ApiOperation({ summary: 'Update a map' })
   @ApiParam({ name: 'id', description: 'Map ID' })
@@ -116,7 +111,6 @@ export class MapsController {
     return this.mapsService.update(id, updateMapDto, user.id);
   }
 
-  @UseGuards(AuthGuard)
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a map (soft delete)' })
   @ApiParam({ name: 'id', description: 'Map ID' })

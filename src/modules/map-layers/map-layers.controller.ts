@@ -7,13 +7,16 @@ import {
   Body,
   Param,
   ParseIntPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { MapLayersService } from './map-layers.service';
 import { CreateMapLayerDto } from './dto/create-map-layer.dto';
 import { UpdateMapLayerDto } from './dto/update-map-layer.dto';
+import { JwtAuthGuard } from 'src/common/guards/auth/jwt.guard';
 
 @ApiTags('map-layers')
+@UseGuards(JwtAuthGuard)
 @Controller('map-layers')
 export class MapLayersController {
   constructor(private readonly mapLayersService: MapLayersService) {}
