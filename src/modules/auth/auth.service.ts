@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { LoginUserDto } from './dto/login-user.dto';
 import { JwtService } from '@nestjs/jwt';
@@ -18,22 +18,29 @@ export class AuthService {
     const dbUser = await this.userService.findUserByEmail(loginUserDto.email);
     
     try {
-      if(!BcryptAdapter.comparePassword(dbUser.user.password, loginUserDto.password)) {
-        throw new BadRequestException('Credenciales inválidas');
+      if (
+        !BcryptAdapter.comparePassword(
+          dbUser.user.password,
+          loginUserDto.password,
+        )
+      ) {
+        throw new UnauthorizedException('INVALID_CREDENTIALS');
       }
-      
-      const {password, ...user} = dbUser.user;
 
-      const{ accessToken, refreshToken } = await this.generateTokens(dbUser.user, dbUser.roles);
+      const { password, ...user } = dbUser.user;
+
+      const { accessToken, refreshToken } = await this.generateTokens(
+        dbUser.user,
+        dbUser.roles,
+      );
       return {
         accessToken,
         refreshToken,
         user: {
           ...user,
           roles: dbUser.roles,
-        }
-      }
-
+        },
+      };
     } catch (error) {
       throw error;
     }
@@ -41,7 +48,7 @@ export class AuthService {
 
   async refreshToken(refreshToken: string) {
     if (!refreshToken)
-      throw new UnauthorizedException('Regresh token no válido');
+      throw new UnauthorizedException('REFRESH_TOKEN_INVALID');
 
     const payload = await this.jwtService.verifyAsync(refreshToken, {
       secret: envs.jwtRefreshSecret,
@@ -49,14 +56,14 @@ export class AuthService {
     const dbUser = await this.userService.findUserByEmail(payload.email);
 
     if (!payload?.sub)
-      throw new UnauthorizedException('Token inválido');
+      throw new UnauthorizedException('TOKEN_INVALID');
 
     if (payload?.type !== 'refresh')
-      throw new UnauthorizedException('Token inválido');
+      throw new UnauthorizedException('TOKEN_INVALID');
 
 
     if (!dbUser.user || dbUser.user.isActive === false) {
-      throw new UnauthorizedException('Usuario no encontrado o está inactivo');
+      throw new UnauthorizedException('USER_INACTIVE');
     }
 
     return this.generateTokens(dbUser.user, dbUser.roles);

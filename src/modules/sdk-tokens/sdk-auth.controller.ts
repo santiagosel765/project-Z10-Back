@@ -5,18 +5,25 @@ import {
   Post,
   UnauthorizedException,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import { JwtService } from '@nestjs/jwt';
 import { envs } from 'src/config/envs';
 import { SdkTokensService } from './sdk-tokens.service';
 import {
+  SdkTokenExchangeRequestDto,
   SdkTokenExchangeResponseDto,
   SdkTokenValidateRequestDto,
   SdkTokenValidateResponseDto,
 } from './dto/sdk-token-validate.dto';
 
-@ApiTags('sdk-auth')
+@ApiTags('SDK Auth')
 @Controller('sdk-auth')
 export class SdkAuthController {
   constructor(
@@ -31,7 +38,7 @@ export class SdkAuthController {
     const rawToken = body.token?.trim() || headerToken?.trim();
 
     if (!rawToken) {
-      throw new UnauthorizedException('Token SDK requerido');
+      throw new UnauthorizedException('SDK_TOKEN_REQUIRED');
     }
 
     return rawToken;
@@ -44,8 +51,9 @@ export class SdkAuthController {
     description:
       'Pensado para ser llamado por zenit-sdk. Valida el token usando el prefijo y bcrypt.',
   })
-  @ApiResponse({ status: 200, type: SdkTokenValidateResponseDto })
-  @ApiResponse({ status: 401, description: 'Token inválido o expirado' })
+  @ApiBody({ type: SdkTokenValidateRequestDto })
+  @ApiOkResponse({ type: SdkTokenValidateResponseDto })
+  @ApiUnauthorizedResponse({ description: 'SDK token invalid or expired' })
   async validateToken(
     @Body() body: SdkTokenValidateRequestDto,
     @Headers('x-sdk-token') headerToken?: string,
@@ -55,7 +63,7 @@ export class SdkAuthController {
 
     if (!validationResult.valid) {
       throw new UnauthorizedException(
-        validationResult.reason || 'Token inválido o expirado',
+        validationResult.reason || 'SDK_TOKEN_INVALID',
       );
     }
 
@@ -74,10 +82,11 @@ export class SdkAuthController {
     description:
       'Endpoint pensado para zenit-sdk. Devuelve un JWT de corta duración si el token SDK es válido.',
   })
-  @ApiResponse({ status: 200, type: SdkTokenExchangeResponseDto })
-  @ApiResponse({ status: 401, description: 'Token inválido o expirado' })
+  @ApiBody({ type: SdkTokenExchangeRequestDto })
+  @ApiOkResponse({ type: SdkTokenExchangeResponseDto })
+  @ApiUnauthorizedResponse({ description: 'SDK token invalid or expired' })
   async exchangeToken(
-    @Body() body: SdkTokenValidateRequestDto,
+    @Body() body: SdkTokenExchangeRequestDto,
     @Headers('x-sdk-token') headerToken?: string,
   ): Promise<SdkTokenExchangeResponseDto> {
     const token = this.pickToken(body, headerToken);
@@ -85,7 +94,7 @@ export class SdkAuthController {
 
     if (!validationResult.valid) {
       throw new UnauthorizedException(
-        validationResult.reason || 'Token inválido o expirado',
+        validationResult.reason || 'SDK_TOKEN_INVALID',
       );
     }
 

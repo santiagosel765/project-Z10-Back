@@ -8,6 +8,23 @@ import {
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 
+/**
+ * Global error formatter for HTTP requests.
+ *
+ * All errors are serialized following the structure:
+ * {
+ *   success: false,
+ *   statusCode: number,
+ *   timestamp: string,
+ *   path: string,
+ *   method: string,
+ *   error: string, // short error name/code
+ *   message: string | string[] // human-readable or code-friendly message
+ * }
+ *
+ * SDKs can rely on `statusCode`, `error`, and `message` to map errors in a
+ * deterministic way.
+ */
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
   private readonly logger = new Logger(GlobalExceptionFilter.name);
@@ -31,7 +48,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         error = responseObj.error || exception.name;
       } else {
         message = exceptionResponse as string;
-        error = exception.name;
+        error = exception.name || HttpStatus[status];
       }
     } else if (exception instanceof Error) {
       status = HttpStatus.INTERNAL_SERVER_ERROR;
