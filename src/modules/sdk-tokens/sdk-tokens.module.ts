@@ -4,10 +4,11 @@ import { SdkTokensService } from './sdk-tokens.service';
 import { SdkTokensController } from './sdk-tokens.controller';
 import { SdkClient } from './entities/sdk-client.entity';
 import { SdkToken } from './entities/sdk-token.entity';
+import { SdkAuthController } from './sdk-auth.controller';
 
 @Module({
   imports: [TypeOrmModule.forFeature([SdkClient, SdkToken])],
-  controllers: [SdkTokensController],
+  controllers: [SdkTokensController, SdkAuthController],
   providers: [SdkTokensService],
   exports: [SdkTokensService],
 })

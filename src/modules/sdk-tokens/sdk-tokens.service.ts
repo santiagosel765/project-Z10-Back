@@ -16,6 +16,15 @@ import { CreateSdkTokenDto } from './dto/create-sdk-token.dto';
 import * as crypto from 'crypto';
 import * as bcrypt from 'bcrypt';
 
+export interface SdkTokenValidationResult {
+  valid: boolean;
+  clientId?: number;
+  clientName?: string;
+  scopes?: string[];
+  reason?: string;
+  token?: SdkToken;
+}
+
 @Injectable()
 export class SdkTokensService {
   private readonly logger = new Logger(SdkTokensService.name);
@@ -27,6 +36,10 @@ export class SdkTokensService {
     @InjectRepository(SdkToken)
     private sdkTokenRepository: Repository<SdkToken>,
   ) {}
+
+  private buildTokenPrefix(rawToken: string): string {
+    return `${rawToken.substring(0, 12)}...`;
+  }
 
   /**
    * Crear un nuevo SDK client
@@ -184,7 +197,7 @@ export class SdkTokensService {
     const tokenHash = await bcrypt.hash(token, 10);
 
     // Guardar prefijo para mostrar (primeros 12 caracteres)
-    const tokenPrefix = token.substring(0, 12) + '...';
+    const tokenPrefix = this.buildTokenPrefix(token);
 
     const sdkToken = this.sdkTokenRepository.create({
       clientId: dto.clientId,
@@ -217,45 +230,74 @@ export class SdkTokensService {
   }
 
   /**
+   * Validar token SDK de manera eficiente (por prefijo)
+   */
+  async validateRawToken(rawToken: string): Promise<SdkTokenValidationResult> {
+    if (!rawToken || !rawToken.startsWith('znt_')) {
+      return { valid: false, reason: 'invalid_format' };
+    }
+
+    const tokenPrefix = this.buildTokenPrefix(rawToken);
+    const now = new Date();
+
+    const tokens = await this.sdkTokenRepository
+      .createQueryBuilder('token')
+      .leftJoinAndSelect('token.client', 'client')
+      .where('token.tokenPrefix = :tokenPrefix', { tokenPrefix })
+      .andWhere('token.isActive = true')
+      .getMany();
+
+    if (!tokens.length) {
+      return { valid: false, reason: 'not_found' };
+    }
+
+    const activeTokens = tokens.filter(
+      (token) => !token.expiresAt || token.expiresAt > now,
+    );
+
+    if (!activeTokens.length) {
+      return { valid: false, reason: 'expired' };
+    }
+
+    for (const sdkToken of activeTokens) {
+      const isMatch = await bcrypt.compare(rawToken, sdkToken.tokenHash);
+
+      if (!isMatch) {
+        continue;
+      }
+
+      if (!sdkToken.client || !sdkToken.client.isActive) {
+        return { valid: false, reason: 'client_inactive' };
+      }
+
+      sdkToken.lastUsedAt = new Date();
+      await this.sdkTokenRepository.save(sdkToken);
+
+      return {
+        valid: true,
+        clientId: sdkToken.clientId,
+        clientName: sdkToken.client.name,
+        scopes: [],
+        token: sdkToken,
+      };
+    }
+
+    return { valid: false, reason: 'invalid_token' };
+  }
+
+  /**
    * Validar token SDK
    */
   async validateToken(token: string): Promise<SdkToken | null> {
-    if (!token || !token.startsWith('znt_')) {
-      throw new UnauthorizedException('Token inválido');
+    const validationResult = await this.validateRawToken(token);
+
+    if (!validationResult.valid || !validationResult.token) {
+      throw new UnauthorizedException(
+        validationResult.reason || 'Token inválido',
+      );
     }
 
-    // Buscar todos los tokens activos
-    const tokens = await this.sdkTokenRepository.find({
-      where: { isActive: true },
-      relations: ['client'],
-    });
-
-    // Comparar con bcrypt
-    for (const sdkToken of tokens) {
-      const isMatch = await bcrypt.compare(token, sdkToken.tokenHash);
-
-      if (isMatch) {
-        // Verificar si el cliente está activo
-        if (!sdkToken.client.isActive) {
-          throw new UnauthorizedException(
-            'Cliente asociado al token está inactivo',
-          );
-        }
-
-        // Verificar expiración
-        if (sdkToken.expiresAt && new Date() > sdkToken.expiresAt) {
-          throw new UnauthorizedException('Token expirado');
-        }
-
-        // Actualizar last_used_at
-        sdkToken.lastUsedAt = new Date();
-        await this.sdkTokenRepository.save(sdkToken);
-
-        return sdkToken;
-      }
-    }
-
-    throw new UnauthorizedException('Token inválido');
+    return validationResult.token;
   }
 
   /**
