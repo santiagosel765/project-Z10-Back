@@ -1,0 +1,4278 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/v1": {
+      "get": {
+        "operationId": "AppController_checkHealth",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "App"
+        ]
+      }
+    },
+    "/api/v1/users": {
+      "post": {
+        "operationId": "UsersController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      },
+      "get": {
+        "operationId": "UsersController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/api/v1/users/{id}": {
+      "get": {
+        "operationId": "UsersController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      },
+      "patch": {
+        "operationId": "UsersController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/api/v1/users/disable/{id}": {
+      "patch": {
+        "operationId": "UsersController_disableUser",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/api/v1/users/enable/{id}": {
+      "patch": {
+        "operationId": "UsersController_enableUser",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "description": "Autentica usuario y emite accessToken/refreshToken para llamadas protegidas.",
+        "operationId": "AuthController_login",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid credentials"
+          }
+        },
+        "summary": "User login",
+        "tags": [
+          "Auth – Usuario"
+        ]
+      }
+    },
+    "/api/v1/auth/refresh": {
+      "post": {
+        "description": "Regenera accessToken y refreshToken a partir de un refresh token válido.",
+        "operationId": "AuthController_refresh",
+        "parameters": [],
+        "requestBody": {
+          "required": false,
+          "description": "Opcional: refresh token en el body. También se puede enviar en cookie httpOnly o en el header Authorization: Bearer <token>.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RefreshResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or expired refresh token"
+          }
+        },
+        "summary": "Refresh tokens",
+        "tags": [
+          "Auth – Usuario"
+        ]
+      }
+    },
+    "/api/v1/auth/me": {
+      "get": {
+        "description": "Obtiene los datos del usuario autenticado mediante JWT.",
+        "operationId": "AuthController_me",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "summary": "Usuario autenticado",
+        "tags": [
+          "Auth – Usuario"
+        ]
+      }
+    },
+    "/api/v1/auth/validate": {
+      "get": {
+        "description": "Valida el access token actual.",
+        "operationId": "AuthController_validate",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidateResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "summary": "Validar access token",
+        "tags": [
+          "Auth – Usuario"
+        ]
+      }
+    },
+    "/api/v1/layers": {
+      "post": {
+        "operationId": "LayersController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadLayerDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Layers"
+        ]
+      },
+      "get": {
+        "description": "\n      Obtiene todas las capas del usuario autenticado.\n      \n      **Retorna:**\n      - Lista de capas con metadata básica\n      - Ordenadas por fecha de creación (más recientes primero)\n      - No incluye datos de features (solo metadata)\n    ",
+        "operationId": "LayersController_getUserLayers",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of user layers",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "number",
+                        "example": 1
+                      },
+                      "name": {
+                        "type": "string",
+                        "example": "Puntos de Interés"
+                      },
+                      "description": {
+                        "type": "string",
+                        "example": "Lugares importantes"
+                      },
+                      "layerType": {
+                        "type": "string",
+                        "example": "point"
+                      },
+                      "totalFeatures": {
+                        "type": "number",
+                        "example": 150
+                      },
+                      "isPublic": {
+                        "type": "boolean",
+                        "example": false
+                      },
+                      "style": {
+                        "type": "object"
+                      },
+                      "originalFilename": {
+                        "type": "string",
+                        "example": "data.geojson"
+                      },
+                      "fileSizeBytes": {
+                        "type": "number",
+                        "example": 1024000
+                      },
+                      "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "updatedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Obtener capas del usuario",
+        "tags": [
+          "Layers"
+        ]
+      }
+    },
+    "/api/v1/layers/all": {
+      "get": {
+        "description": "\n      Obtiene todas las capas activas del sistema (acceso admin/público).\n      \n      **Retorna:**\n      - Lista de todas las capas con metadata\n      - Información del propietario incluida\n      - Soporte de paginación\n      - Ordenadas por fecha de creación (más recientes primero)\n      \n      **Casos de uso:**\n      - Dashboard de administrador\n      - Catálogo de capas\n      - Vista general del sistema\n    ",
+        "operationId": "LayersController_getAllLayers",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Items per page",
+            "schema": {
+              "example": 20,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of all layers",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "number",
+                            "example": 1
+                          },
+                          "name": {
+                            "type": "string",
+                            "example": "Puntos de Interés"
+                          },
+                          "description": {
+                            "type": "string"
+                          },
+                          "layerType": {
+                            "type": "string",
+                            "example": "point"
+                          },
+                          "totalFeatures": {
+                            "type": "number",
+                            "example": 150
+                          },
+                          "isPublic": {
+                            "type": "boolean"
+                          },
+                          "style": {
+                            "type": "object"
+                          },
+                          "originalFilename": {
+                            "type": "string"
+                          },
+                          "fileSizeBytes": {
+                            "type": "number"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "user": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "number"
+                              },
+                              "firstName": {
+                                "type": "string"
+                              },
+                              "lastName": {
+                                "type": "string"
+                              },
+                              "email": {
+                                "type": "string"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "total": {
+                          "type": "number",
+                          "example": 100
+                        },
+                        "page": {
+                          "type": "number",
+                          "example": 1
+                        },
+                        "limit": {
+                          "type": "number",
+                          "example": 20
+                        },
+                        "totalPages": {
+                          "type": "number",
+                          "example": 5
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Obtener todas las capas",
+        "tags": [
+          "Layers"
+        ]
+      }
+    },
+    "/api/v1/layers/public": {
+      "get": {
+        "description": "\n      Obtiene todas las capas disponibles públicamente.\n      \n      **Características:**\n      - No requiere autenticación\n      - Soporte de paginación\n      - Ordenadas por fecha de creación (más recientes primero)\n    ",
+        "operationId": "LayersController_getPublicLayers",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Items per page",
+            "schema": {
+              "example": 20,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of public layers",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "number"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "description": {
+                            "type": "string"
+                          },
+                          "layerType": {
+                            "type": "string"
+                          },
+                          "totalFeatures": {
+                            "type": "number"
+                          },
+                          "style": {
+                            "type": "object"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          }
+                        }
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "total": {
+                          "type": "number",
+                          "example": 100
+                        },
+                        "page": {
+                          "type": "number",
+                          "example": 1
+                        },
+                        "limit": {
+                          "type": "number",
+                          "example": 20
+                        },
+                        "totalPages": {
+                          "type": "number",
+                          "example": 5
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Obtener capas públicas",
+        "tags": [
+          "Layers"
+        ]
+      }
+    },
+    "/api/v1/layers/{id}": {
+      "get": {
+        "description": "\n      Obtiene información detallada sobre una capa específica.\n      \n      **Retorna:**\n      - Metadata de la capa\n      - Bounding box como GeoJSON\n      - Información del propietario (limitada)\n      - NO incluye features (usar endpoint /geojson)\n      \n      **Acceso:**\n      - Capas públicas: Cualquiera\n      - Capas privadas: Solo propietario\n    ",
+        "operationId": "LayersController_getLayerById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Layer ID",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Layer details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number",
+                      "example": 1
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "Puntos de Interés"
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "userId": {
+                      "type": "number"
+                    },
+                    "layerType": {
+                      "type": "string",
+                      "example": "point"
+                    },
+                    "totalFeatures": {
+                      "type": "number",
+                      "example": 150
+                    },
+                    "bboxGeometry": {
+                      "type": "object",
+                      "description": "Bounding box as GeoJSON Polygon"
+                    },
+                    "style": {
+                      "type": "object"
+                    },
+                    "isActive": {
+                      "type": "boolean"
+                    },
+                    "isPublic": {
+                      "type": "boolean"
+                    },
+                    "sharedWith": {
+                      "type": "array",
+                      "items": {
+                        "type": "number"
+                      }
+                    },
+                    "originalFilename": {
+                      "type": "string"
+                    },
+                    "fileSizeBytes": {
+                      "type": "number"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "user": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "number"
+                        },
+                        "firstName": {
+                          "type": "string"
+                        },
+                        "lastName": {
+                          "type": "string"
+                        },
+                        "email": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access denied"
+          },
+          "404": {
+            "description": "Layer not found"
+          }
+        },
+        "summary": "Obtener detalles de una capa",
+        "tags": [
+          "Layers"
+        ]
+      },
+      "patch": {
+        "description": "\n      Actualiza la metadata de la capa (nombre, descripción, estilo, visibilidad).\n      \n      **Campos editables:**\n      - name: Nombre de la capa (3-200 caracteres)\n      - description: Descripción de la capa\n      - isPublic: Control de visibilidad pública\n      - style: Configuración de estilo (objeto JSON)\n      \n      **Nota:**\n      - No se pueden actualizar datos de geometría (features son inmutables)\n      - Solo el propietario puede actualizar\n      - La capa debe estar activa\n      \n      **Casos de uso:**\n      - Renombrar capa\n      - Actualizar estilo para visualización\n      - Cambiar configuración de privacidad\n      - Agregar/actualizar descripción\n    ",
+        "operationId": "LayersController_updateLayer",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Layer ID",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateLayerDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Layer updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number",
+                      "example": 1
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "Updated Layer Name"
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "isPublic": {
+                      "type": "boolean"
+                    },
+                    "style": {
+                      "type": "object"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not the layer owner"
+          },
+          "404": {
+            "description": "Layer not found"
+          }
+        },
+        "summary": "Actualizar capa",
+        "tags": [
+          "Layers"
+        ]
+      },
+      "delete": {
+        "description": "\n      Eliminación lógica de una capa (establece isActive = false).\n      \n      **Restricciones:**\n      - Solo el propietario puede eliminar\n      - La capa debe estar activa\n      - Eliminación lógica (datos retenidos, no visibles)\n      \n      **Efectos:**\n      - La capa se vuelve inactiva\n      - Removida de la lista de capas del usuario\n      - Ya no accesible vía API\n      - Datos preservados en la base de datos\n      \n      **Casos de uso:**\n      - Remover capas no deseadas\n      - Limpiar datos de prueba\n      - Archivar capas antiguas\n    ",
+        "operationId": "LayersController_deleteLayer",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Layer ID",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Layer deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Layer deleted successfully"
+                    },
+                    "id": {
+                      "type": "number",
+                      "example": 1
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not the layer owner"
+          },
+          "404": {
+            "description": "Layer not found"
+          }
+        },
+        "summary": "Eliminar capa (soft delete)",
+        "tags": [
+          "Layers"
+        ]
+      }
+    },
+    "/api/v1/layers/{id}/geojson": {
+      "get": {
+        "description": "\n      Obtiene la capa completa como un FeatureCollection GeoJSON válido.\n      \n      **Retorna:**\n      - GeoJSON completo con todos los features\n      - Todas las propiedades de los features\n      - Geometrías en WGS84 (EPSG:4326)\n      \n      **Casos de uso:**\n      - Mostrar capa completa en el mapa\n      - Exportar datos de la capa\n      - Descarga para uso offline\n      \n      **Rendimiento:**\n      - Puede ser lento para capas grandes (>5000 features)\n      - Considerar usar /geojson/bbox para consultas de viewport\n      \n      **Acceso:**\n      - Capas públicas: Cualquiera\n      - Capas privadas: Propietario y usuarios compartidos\n    ",
+        "operationId": "LayersController_getLayerGeoJson",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Layer ID",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Complete GeoJSON FeatureCollection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "FeatureCollection"
+                    },
+                    "features": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "example": "Feature"
+                          },
+                          "geometry": {
+                            "type": "object",
+                            "properties": {
+                              "type": {
+                                "type": "string",
+                                "example": "Point"
+                              },
+                              "coordinates": {
+                                "type": "array",
+                                "items": {
+                                  "type": "number"
+                                },
+                                "example": [
+                                  -90.5089,
+                                  14.5965
+                                ]
+                              }
+                            }
+                          },
+                          "properties": {
+                            "type": "object",
+                            "example": {
+                              "name": "Hospital Roosevelt",
+                              "type": "hospital"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Access denied"
+          },
+          "404": {
+            "description": "Layer not found"
+          }
+        },
+        "summary": "Obtener capa como GeoJSON",
+        "tags": [
+          "Layers"
+        ]
+      }
+    },
+    "/api/v1/layers/{id}/geojson/download": {
+      "get": {
+        "operationId": "LayersController_downloadLayerGeoJson",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Layers"
+        ]
+      }
+    },
+    "/api/v1/layers/search": {
+      "get": {
+        "operationId": "LayersController_searchLayers",
+        "parameters": [
+          {
+            "name": "q",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Layers"
+        ]
+      }
+    },
+    "/api/v1/layers/{id}/features/catalog": {
+      "get": {
+        "description": "\n      **SOLO PARA CAPAS MULTIPOLYGON**\n      \n      Retorna un catálogo listado de todas las features de una capa multipolygon con:\n      - ID y índice de cada feature\n      - Propiedades (nombre, código, etc.)\n      - BBox individual calculado para cada feature\n      - Centroide de cada feature\n      - Área en km²\n      - Tipo de geometría\n      \n      **Caso de uso:**\n      Este endpoint está diseñado para capas grandes de multipolígonos (como países, estados, municipios)\n      donde se necesita mostrar un listado/catálogo en el frontend para que el usuario seleccione\n      qué features específicas desea visualizar en el mapa, sin tener que cargar todas las geometrías.\n      \n      **Flujo recomendado:**\n      1. Llamar este endpoint para obtener el catálogo\n      2. Mostrar lista en UI con nombres y metadatos\n      3. Usuario selecciona features específicas\n      4. Llamar a GET /layers/:id/features?featureIds=1,5,10 para obtener solo las geometrías seleccionadas\n    ",
+        "operationId": "LayersController_getFeaturesCatalog",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID de la capa multipolygon",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Catálogo de features obtenido exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "layerId": {
+                      "type": "number"
+                    },
+                    "layerName": {
+                      "type": "string"
+                    },
+                    "layerType": {
+                      "type": "string"
+                    },
+                    "totalFeatures": {
+                      "type": "number"
+                    },
+                    "features": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "number"
+                          },
+                          "featureIndex": {
+                            "type": "number"
+                          },
+                          "properties": {
+                            "type": "object"
+                          },
+                          "bboxGeometry": {
+                            "type": "object"
+                          },
+                          "centroid": {
+                            "type": "object"
+                          },
+                          "areaKm2": {
+                            "type": "string"
+                          },
+                          "geometryType": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "La capa no es de tipo multipolygon"
+          },
+          "404": {
+            "description": "Capa no encontrada"
+          }
+        },
+        "summary": "Obtener catálogo de features de una capa multipolygon",
+        "tags": [
+          "Layers"
+        ]
+      }
+    },
+    "/api/v1/layers/{id}/features/filter": {
+      "get": {
+        "description": "\n      **SOLO PARA CAPAS MULTIPOLYGON**\n      \n      Permite filtrar features por propiedades dinámicas con soporte para aliases.\n      \n      **Soporte de aliases automático:**\n      El sistema detecta propiedades equivalentes aunque tengan nombres diferentes:\n      - CODDISTRITO = NO_DISTRIT = Cod_Distrito\n      - CODREGION = No_REGIÓN = Cod_Region\n      - etc. (ignora guiones bajos, guiones, espacios y mayúsculas)\n      \n      **Ejemplos de uso:**\n      \n      1. Filtrar por un distrito:\n         `GET /layers/123/features/filter?CODDISTRITO=5`\n         \n      2. Filtrar por múltiples distritos (usar comas):\n         `GET /layers/123/features/filter?CODDISTRITO=5,10,15`\n         \n      3. Filtrar por distrito Y región:\n         `GET /layers/123/features/filter?CODDISTRITO=5&CODREGION=2`\n         \n      4. Combinar con IDs específicos:\n         `GET /layers/123/features/filter?CODDISTRITO=5&featureIds=1&featureIds=5`\n      \n      **Respuesta:**\n      GeoJSON FeatureCollection con solo las features que cumplen los filtros.\n    ",
+        "operationId": "LayersController_getFilteredFeatures",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID de la capa multipolygon",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "featureIds",
+            "required": false,
+            "in": "query",
+            "description": "IDs específicos de features (se combina con filters usando AND)",
+            "schema": {
+              "example": [
+                1,
+                5,
+                10
+              ],
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            }
+          },
+          {
+            "name": "CODREGION",
+            "required": false,
+            "in": "query",
+            "description": "Filtrar por código de región. Valores múltiples separados por coma.",
+            "schema": {
+              "example": "2"
+            }
+          },
+          {
+            "name": "CODDISTRITO",
+            "required": false,
+            "in": "query",
+            "description": "Filtrar por código de distrito. Valores múltiples separados por coma.",
+            "schema": {
+              "example": "5"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Features filtradas obtenidas exitosamente"
+          },
+          "400": {
+            "description": "La capa no es de tipo multipolygon"
+          },
+          "404": {
+            "description": "Capa no encontrada"
+          }
+        },
+        "summary": "Filtrar features de una capa multipolygon por propiedades",
+        "tags": [
+          "Layers"
+        ]
+      }
+    },
+    "/api/v1/layers/features/filter-multiple": {
+      "get": {
+        "description": "\n      **SOLO PARA CAPAS MULTIPOLYGON**\n      \n      Aplica los mismos filtros a múltiples capas y retorna todas las features que cumplan.\n      Útil cuando tienes varias capas relacionadas (Distritos, Regiones, Sectores, etc.)\n      y quieres filtrarlas todas con los mismos criterios.\n      \n      **Ejemplo de caso de uso:**\n      Tienes 4 capas:\n      - Distritos (con CODDISTRITO, CODREGION)\n      - Regiones (con CODDISTRITO, CODREGION)\n      - Limites-Sucursales (con CODDISTRITO, CODREGION)\n      - Sectores-Promotor (con NO_DISTRIT, No_REGIÓN)\n      \n      Quieres ver TODAS las features de estas 4 capas donde CODDISTRITO=5:\n      `GET /layers/features/filter-multiple?layerIds=1,2,3,4&CODDISTRITO=5`\n      \n      **Respuesta:**\n      GeoJSON FeatureCollection con todas las features de todas las capas que cumplen los filtros,\n      más metadata detallada por capa.\n      \n      **Ventajas:**\n      - Una sola petición en lugar de 4\n      - Aliases automáticos entre capas\n      - Metadata detallada de cuántas features vienen de cada capa\n    ",
+        "operationId": "LayersController_getFilteredFeaturesMultipleLayers",
+        "parameters": [
+          {
+            "name": "CODREGION",
+            "required": false,
+            "in": "query",
+            "description": "Filtrar por código de región",
+            "schema": {
+              "example": "2"
+            }
+          },
+          {
+            "name": "CODDISTRITO",
+            "required": false,
+            "in": "query",
+            "description": "Filtrar por código de distrito",
+            "schema": {
+              "example": "5"
+            }
+          },
+          {
+            "name": "layerIds",
+            "required": true,
+            "in": "query",
+            "description": "IDs de las capas a filtrar (separados por coma)",
+            "schema": {
+              "example": "1,2,3,4"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Features filtradas de múltiples capas obtenidas exitosamente"
+          },
+          "400": {
+            "description": "Alguna capa no es de tipo multipolygon"
+          },
+          "404": {
+            "description": "No se encontraron capas con los IDs proporcionados"
+          }
+        },
+        "summary": "Filtrar features de MÚLTIPLES capas con los mismos filtros",
+        "tags": [
+          "Layers"
+        ]
+      }
+    },
+    "/api/v1/layers/{id}/features": {
+      "get": {
+        "description": "\n      **SOLO PARA CAPAS MULTIPOLYGON**\n      \n      Retorna las geometrías completas en formato GeoJSON de:\n      - Features específicas si se proporciona el parámetro featureIds\n      - Todas las features si no se proporciona featureIds\n      \n      **Parámetros:**\n      - featureIds: Array opcional de IDs de features a obtener (ej: ?featureIds=1&featureIds=5&featureIds=10)\n      \n      **Caso de uso:**\n      Este endpoint se usa después de obtener el catálogo con GET /layers/:id/features/catalog\n      para cargar SOLO las geometrías de las features que el usuario seleccionó.\n      \n      **Ejemplo de flujo completo:**\n      1. GET /layers/123/features/catalog → Obtener listado con nombres y bboxes\n      2. Usuario selecciona \"Estado A\", \"Estado B\", \"Estado C\" (IDs: 1, 5, 10)\n      3. GET /layers/123/features?featureIds=1&featureIds=5&featureIds=10 → Cargar solo esas 3 geometrías\n      4. Renderizar en mapa solo las features seleccionadas\n      \n      **Ventajas:**\n      - No cargas todas las geometrías innecesariamente\n      - Respuesta mucho más rápida y ligera\n      - Mejor experiencia de usuario en capas grandes\n    ",
+        "operationId": "LayersController_getSelectedFeatures",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID de la capa multipolygon",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "featureIds",
+            "required": false,
+            "in": "query",
+            "description": "IDs de features específicas a obtener. Si no se proporciona, retorna todas las features.",
+            "schema": {
+              "example": [
+                1,
+                5,
+                10
+              ],
+              "type": "array",
+              "items": {
+                "type": "number"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "GeoJSON con las features seleccionadas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "FeatureCollection"
+                    },
+                    "features": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "example": "Feature"
+                          },
+                          "id": {
+                            "type": "number"
+                          },
+                          "geometry": {
+                            "type": "object"
+                          },
+                          "properties": {
+                            "type": "object"
+                          }
+                        }
+                      }
+                    },
+                    "metadata": {
+                      "type": "object",
+                      "properties": {
+                        "layerId": {
+                          "type": "number"
+                        },
+                        "layerName": {
+                          "type": "string"
+                        },
+                        "totalFeatures": {
+                          "type": "number"
+                        },
+                        "selectedFeatureIds": {
+                          "oneOf": [
+                            {
+                              "type": "array",
+                              "items": {
+                                "type": "number"
+                              }
+                            },
+                            {
+                              "type": "string",
+                              "example": "all"
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "La capa no es de tipo multipolygon"
+          },
+          "404": {
+            "description": "Capa no encontrada"
+          }
+        },
+        "summary": "Obtener geometrías de features seleccionadas de una capa multipolygon",
+        "tags": [
+          "Layers"
+        ]
+      }
+    },
+    "/api/v1/layers/{id}/tiles/{z}/{x}/{y}.mvt": {
+      "get": {
+        "description": "\n      Obtiene un tile vectorial en formato Mapbox Vector Tiles (MVT).\n      \n      **⚡ PERFECTO PARA CAPAS DE 100,000+ FEATURES:**\n      - Solo carga geometrías visibles en ese tile\n      - Simplificación automática según zoom\n      - Formato binario ultra compacto\n      - Compatible con Mapbox GL JS, Leaflet\n      \n      **Cómo funciona:**\n      - El mapa divide el mundo en cuadrículas (tiles)\n      - z = zoom level (0-22)\n      - x, y = coordenadas del tile\n      - Cada tile es ~5-50KB (vs MB con GeoJSON)\n      \n      **Ejemplo:**\n      GET /layers/1/tiles/14/4521/7329.mvt\n      (Tile de zoom 14 en Guatemala City)\n    ",
+        "operationId": "LayersController_getLayerTile",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Layer ID",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "z",
+            "required": true,
+            "in": "path",
+            "description": "Zoom level (0-22)",
+            "schema": {
+              "example": 14,
+              "type": "number"
+            }
+          },
+          {
+            "name": "x",
+            "required": true,
+            "in": "path",
+            "description": "Tile X coordinate",
+            "schema": {
+              "example": 4521,
+              "type": "number"
+            }
+          },
+          {
+            "name": "y",
+            "required": true,
+            "in": "path",
+            "description": "Tile Y coordinate",
+            "schema": {
+              "example": 7329,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Binary MVT tile",
+            "content": {
+              "application/vnd.mapbox-vector-tile": {}
+            }
+          }
+        },
+        "summary": "Get vector tile (MVT) - MEJOR para capas grandes",
+        "tags": [
+          "Layers"
+        ]
+      }
+    },
+    "/api/v1/layers/{id}/clusters": {
+      "get": {
+        "description": "\n      Agrupa features cercanos en clusters para mejor rendimiento.\n      \n      **Ideal para:**\n      - Capas de puntos con 10,000+ features\n      - Visualización de densidad\n      - Zoom out (vista general)\n      \n      **Respuesta:**\n      - Puntos individuales si pocos en vista\n      - Clusters con conteo si muchos cercanos\n      - Propiedades: cluster=true, point_count=N\n    ",
+        "operationId": "LayersController_getLayerClusters",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "minLon",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "minLat",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "maxLon",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "maxLat",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "zoom",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "example": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Get clustered points - Para capas de puntos grandes",
+        "tags": [
+          "Layers"
+        ]
+      }
+    },
+    "/api/v1/layers/{id}/geojson/intersects": {
+      "post": {
+        "description": "\n      Retorna solo las features de una capa que se intersectan con una geometría proporcionada.\n      \n      **Casos de uso:**\n      - Obtener puntos dentro de un polígono\n      - Obtener líneas que cruzan un área\n      - Filtrar features por región geográfica personalizada\n      - Análisis espacial: \"¿qué puntos de interés están dentro de este distrito?\"\n      \n      **Ventajas:**\n      - Análisis espacial preciso con ST_Intersects de PostGIS\n      - Soporta cualquier tipo de geometría (Point, LineString, Polygon, MultiPolygon, etc.)\n      - Límite configurable de features\n      - Simplificación opcional de geometrías\n      \n      **Ejemplo de body:**\n      ```json\n      {\n        \"geometry\": {\n          \"type\": \"Polygon\",\n          \"coordinates\": [[\n            [-90.5, 14.5],\n            [-90.5, 14.7],\n            [-90.3, 14.7],\n            [-90.3, 14.5],\n            [-90.5, 14.5]\n          ]]\n        }\n      }\n      ```\n      \n      **Flujo recomendado:**\n      1. Usuario selecciona un polígono de una capa (ej: un distrito)\n      2. Obtener la geometría de ese polígono con GET /layers/:id/features?featureIds=X\n      3. Usar esa geometría aquí para filtrar otra capa (ej: puntos de venta)\n      4. Resultado: solo los puntos que están dentro del distrito seleccionado\n    ",
+        "operationId": "LayersController_getLayerFeaturesIntersecting",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID de la capa a filtrar",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "maxFeatures",
+            "required": false,
+            "in": "query",
+            "description": "Límite máximo de features a retornar",
+            "schema": {
+              "example": 5000,
+              "type": "number"
+            }
+          },
+          {
+            "name": "simplify",
+            "required": false,
+            "in": "query",
+            "description": "Simplificar geometrías para reducir tamaño",
+            "schema": {
+              "example": false,
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Features que intersectan con la geometría",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "FeatureCollection"
+                    },
+                    "features": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "example": "Feature"
+                          },
+                          "geometry": {
+                            "type": "object"
+                          },
+                          "properties": {
+                            "type": "object"
+                          }
+                        }
+                      }
+                    },
+                    "metadata": {
+                      "type": "object",
+                      "properties": {
+                        "layerId": {
+                          "type": "number"
+                        },
+                        "layerName": {
+                          "type": "string"
+                        },
+                        "totalIntersecting": {
+                          "type": "number",
+                          "example": 234
+                        },
+                        "returned": {
+                          "type": "number",
+                          "example": 234
+                        },
+                        "limited": {
+                          "type": "boolean",
+                          "example": false
+                        },
+                        "message": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Geometría inválida"
+          },
+          "404": {
+            "description": "Capa no encontrada"
+          }
+        },
+        "summary": "Obtener features que se intersectan con una geometría",
+        "tags": [
+          "Layers"
+        ]
+      }
+    },
+    "/api/v1/layers/{id}/geojson/bbox": {
+      "get": {
+        "description": "\n      Get only features that intersect with a bounding box.\n    \n      - Límite de 5000 features por defecto\n      - Simplificación opcional de geometrías\n      - Mensaje si hay más features disponibles\n      - Metadata sobre features totales vs retornados\n      \n      **Perfect for:**\n      - Loading only visible features in map viewport\n      - Optimizing large layers\n      - Progressive loading as user pans/zooms\n      \n      **Performance:**\n      - Very fast (uses spatial index)\n      - Only returns features in viewport\n      - Reduces data transfer\n      \n      **Parámetros opcionales:**\n      - maxFeatures: Límite de features (default 5000)\n      - simplify: Simplificar geometrías (default true)\n      \n      **Example:**\n      Guatemala City viewport:\n      minLon=-90.55, minLat=14.55, maxLon=-90.45, maxLat=14.65\n    ",
+        "operationId": "LayersController_getLayerFeaturesInBBox",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Layer ID",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "minLon",
+            "required": true,
+            "in": "query",
+            "description": "Minimum longitude (west)",
+            "schema": {
+              "example": -90.55,
+              "type": "number"
+            }
+          },
+          {
+            "name": "minLat",
+            "required": true,
+            "in": "query",
+            "description": "Minimum latitude (south)",
+            "schema": {
+              "example": 14.55,
+              "type": "number"
+            }
+          },
+          {
+            "name": "maxLon",
+            "required": true,
+            "in": "query",
+            "description": "Maximum longitude (east)",
+            "schema": {
+              "example": -90.45,
+              "type": "number"
+            }
+          },
+          {
+            "name": "maxLat",
+            "required": true,
+            "in": "query",
+            "description": "Maximum latitude (north)",
+            "schema": {
+              "example": 14.65,
+              "type": "number"
+            }
+          },
+          {
+            "name": "maxFeatures",
+            "required": false,
+            "in": "query",
+            "description": "Límite máximo de features",
+            "schema": {
+              "example": 5000,
+              "type": "number"
+            }
+          },
+          {
+            "name": "simplify",
+            "required": false,
+            "in": "query",
+            "description": "Simplificar geometrías",
+            "schema": {
+              "example": true,
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "GeoJSON with features in bbox",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "FeatureCollection"
+                    },
+                    "features": {
+                      "type": "array"
+                    },
+                    "metadata": {
+                      "type": "object",
+                      "properties": {
+                        "totalInBounds": {
+                          "type": "number",
+                          "example": 8543
+                        },
+                        "returned": {
+                          "type": "number",
+                          "example": 5000
+                        },
+                        "limited": {
+                          "type": "boolean",
+                          "example": true
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Mostrando 5000 de 8543 features. Haz zoom para ver más detalles."
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid bounding box parameters"
+          },
+          "403": {
+            "description": "Access denied"
+          },
+          "404": {
+            "description": "Layer not found"
+          }
+        },
+        "summary": "Get features in viewport (bbox)",
+        "tags": [
+          "Layers"
+        ]
+      }
+    },
+    "/api/v1/layers/user/stats": {
+      "get": {
+        "operationId": "LayersController_getUserLayerStats",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Layers"
+        ]
+      }
+    },
+    "/api/v1/maps": {
+      "post": {
+        "operationId": "MapsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateMapDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Map created successfully"
+          },
+          "400": {
+            "description": "Invalid input"
+          }
+        },
+        "summary": "Create a new map",
+        "tags": [
+          "maps"
+        ]
+      },
+      "get": {
+        "operationId": "MapsController_findAll",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": 20,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of maps"
+          }
+        },
+        "summary": "Get all maps with pagination",
+        "tags": [
+          "maps"
+        ]
+      }
+    },
+    "/api/v1/maps/default": {
+      "get": {
+        "operationId": "MapsController_getDefault",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Default map"
+          },
+          "404": {
+            "description": "No default map configured"
+          }
+        },
+        "summary": "Get the default map",
+        "tags": [
+          "maps"
+        ]
+      }
+    },
+    "/api/v1/maps/search": {
+      "get": {
+        "operationId": "MapsController_search",
+        "parameters": [
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "mapType",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": 20,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Search results"
+          }
+        },
+        "summary": "Search maps by name or description",
+        "tags": [
+          "maps"
+        ]
+      }
+    },
+    "/api/v1/maps/stats": {
+      "get": {
+        "operationId": "MapsController_getStats",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Map statistics"
+          }
+        },
+        "summary": "Get map statistics",
+        "tags": [
+          "maps"
+        ]
+      }
+    },
+    "/api/v1/maps/{id}": {
+      "get": {
+        "operationId": "MapsController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Map ID",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "includeLayers",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Map details"
+          },
+          "404": {
+            "description": "Map not found"
+          }
+        },
+        "summary": "Get a map by ID",
+        "tags": [
+          "maps"
+        ]
+      },
+      "patch": {
+        "operationId": "MapsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Map ID",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateMapDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Map updated successfully"
+          },
+          "404": {
+            "description": "Map not found"
+          }
+        },
+        "summary": "Update a map",
+        "tags": [
+          "maps"
+        ]
+      },
+      "delete": {
+        "operationId": "MapsController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Map ID",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Map deleted successfully"
+          },
+          "400": {
+            "description": "Cannot delete default map"
+          },
+          "404": {
+            "description": "Map not found"
+          }
+        },
+        "summary": "Delete a map (soft delete)",
+        "tags": [
+          "maps"
+        ]
+      }
+    },
+    "/api/v1/maps/public/all": {
+      "get": {
+        "operationId": "MapsController_findAllPublic",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of public maps with embed URLs"
+          }
+        },
+        "summary": "Get all public maps (no authentication required)",
+        "tags": [
+          "maps"
+        ]
+      }
+    },
+    "/api/v1/maps/public/{id}": {
+      "get": {
+        "operationId": "MapsController_findOnePublic",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Map ID",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "includeLayers",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Public map details with embed URL"
+          },
+          "404": {
+            "description": "Public map not found"
+          }
+        },
+        "summary": "Get a public map by ID (no authentication required)",
+        "tags": [
+          "maps"
+        ]
+      }
+    },
+    "/api/v1/map-types": {
+      "get": {
+        "operationId": "MapTypesController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of map types",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "number",
+                        "example": 1
+                      },
+                      "code": {
+                        "type": "string",
+                        "example": "arcgis"
+                      },
+                      "name": {
+                        "type": "string",
+                        "example": "ArcGIS Web Map"
+                      },
+                      "description": {
+                        "type": "string",
+                        "example": "Mapas creados con ArcGIS Online"
+                      },
+                      "isActive": {
+                        "type": "boolean",
+                        "example": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get all available map types",
+        "tags": [
+          "Map Types"
+        ]
+      }
+    },
+    "/api/v1/map-layers": {
+      "post": {
+        "operationId": "MapLayersController_addLayerToMap",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateMapLayerDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Layer added to map successfully"
+          },
+          "404": {
+            "description": "Map or Layer not found"
+          },
+          "409": {
+            "description": "Layer already added to map"
+          }
+        },
+        "summary": "Add a layer to a map",
+        "tags": [
+          "map-layers"
+        ]
+      }
+    },
+    "/api/v1/map-layers/map/{mapId}": {
+      "get": {
+        "operationId": "MapLayersController_getLayersByMap",
+        "parameters": [
+          {
+            "name": "mapId",
+            "required": true,
+            "in": "path",
+            "description": "Map ID",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of layers in the map"
+          },
+          "404": {
+            "description": "Map not found"
+          }
+        },
+        "summary": "Get all layers for a specific map",
+        "tags": [
+          "map-layers"
+        ]
+      }
+    },
+    "/api/v1/map-layers/layer/{layerId}": {
+      "get": {
+        "operationId": "MapLayersController_getMapsByLayer",
+        "parameters": [
+          {
+            "name": "layerId",
+            "required": true,
+            "in": "path",
+            "description": "Layer ID",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of maps containing the layer"
+          },
+          "404": {
+            "description": "Layer not found"
+          }
+        },
+        "summary": "Get all maps that contain a specific layer",
+        "tags": [
+          "map-layers"
+        ]
+      }
+    },
+    "/api/v1/map-layers/{mapId}/{layerId}": {
+      "patch": {
+        "operationId": "MapLayersController_updateMapLayer",
+        "parameters": [
+          {
+            "name": "mapId",
+            "required": true,
+            "in": "path",
+            "description": "Map ID",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "layerId",
+            "required": true,
+            "in": "path",
+            "description": "Layer ID",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateMapLayerDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Layer configuration updated"
+          },
+          "404": {
+            "description": "Map or Layer not found"
+          }
+        },
+        "summary": "Update layer configuration in a map",
+        "tags": [
+          "map-layers"
+        ]
+      },
+      "delete": {
+        "operationId": "MapLayersController_removeLayerFromMap",
+        "parameters": [
+          {
+            "name": "mapId",
+            "required": true,
+            "in": "path",
+            "description": "Map ID",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "layerId",
+            "required": true,
+            "in": "path",
+            "description": "Layer ID",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Layer removed from map"
+          },
+          "404": {
+            "description": "Map or Layer not found"
+          }
+        },
+        "summary": "Remove a layer from a map",
+        "tags": [
+          "map-layers"
+        ]
+      }
+    },
+    "/api/v1/map-layers/map/{mapId}/reorder": {
+      "patch": {
+        "operationId": "MapLayersController_reorderLayers",
+        "parameters": [
+          {
+            "name": "mapId",
+            "required": true,
+            "in": "path",
+            "description": "Map ID",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Layers reordered successfully"
+          },
+          "404": {
+            "description": "Map not found"
+          }
+        },
+        "summary": "Reorder layers in a map",
+        "tags": [
+          "map-layers"
+        ]
+      }
+    },
+    "/api/v1/pages": {
+      "post": {
+        "description": "Crea una página con sus roles asociados. Útil para el dinamismo del sistema de permisos.",
+        "operationId": "PagesController_create",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "description": "ID del usuario que crea la página",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePageDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Página creada exitosamente"
+          },
+          "400": {
+            "description": "Datos inválidos o roles no existen"
+          },
+          "409": {
+            "description": "Ya existe una página con esa URL"
+          }
+        },
+        "summary": "Crear una nueva página",
+        "tags": [
+          "Pages"
+        ]
+      },
+      "get": {
+        "description": "Lista paginada de páginas con filtros opcionales",
+        "operationId": "PagesController_findAll",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Número de página",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Cantidad de resultados por página",
+            "schema": {
+              "example": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "isActive",
+            "required": false,
+            "in": "query",
+            "description": "Filtrar por estado activo/inactivo",
+            "schema": {
+              "example": true,
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "Buscar por nombre de página",
+            "schema": {
+              "example": "dashboard",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de páginas obtenida exitosamente"
+          }
+        },
+        "summary": "Obtener todas las páginas",
+        "tags": [
+          "Pages"
+        ]
+      }
+    },
+    "/api/v1/pages/stats": {
+      "get": {
+        "description": "Retorna estadísticas generales: total, activas, inactivas, páginas más asociadas a roles",
+        "operationId": "PagesController_getStats",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Estadísticas obtenidas exitosamente"
+          }
+        },
+        "summary": "Obtener estadísticas de páginas",
+        "tags": [
+          "Pages"
+        ]
+      }
+    },
+    "/api/v1/pages/role/{roleId}": {
+      "get": {
+        "description": "Lista todas las páginas asociadas a un rol específico",
+        "operationId": "PagesController_findPagesByRole",
+        "parameters": [
+          {
+            "name": "roleId",
+            "required": true,
+            "in": "path",
+            "description": "ID del rol",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "isActive",
+            "required": false,
+            "in": "query",
+            "description": "Filtrar por páginas activas",
+            "schema": {
+              "example": true,
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Páginas del rol obtenidas exitosamente"
+          },
+          "404": {
+            "description": "Rol no encontrado"
+          }
+        },
+        "summary": "Obtener páginas por rol",
+        "tags": [
+          "Pages"
+        ]
+      }
+    },
+    "/api/v1/pages/{id}": {
+      "get": {
+        "description": "Retorna los detalles de una página incluyendo sus roles asociados",
+        "operationId": "PagesController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID de la página",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Página encontrada"
+          },
+          "404": {
+            "description": "Página no encontrada"
+          }
+        },
+        "summary": "Obtener una página por ID",
+        "tags": [
+          "Pages"
+        ]
+      },
+      "patch": {
+        "description": "Actualiza los datos de una página incluyendo sus roles asociados",
+        "operationId": "PagesController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID de la página",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "description": "ID del usuario que actualiza",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePageDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Página actualizada exitosamente"
+          },
+          "404": {
+            "description": "Página no encontrada"
+          },
+          "409": {
+            "description": "URL ya existe en otra página"
+          }
+        },
+        "summary": "Actualizar una página",
+        "tags": [
+          "Pages"
+        ]
+      },
+      "delete": {
+        "description": "Desactiva una página cambiando su estado isActive a false. No elimina físicamente el registro.",
+        "operationId": "PagesController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID de la página",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "description": "ID del usuario que elimina",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Página desactivada exitosamente"
+          },
+          "404": {
+            "description": "Página no encontrada"
+          }
+        },
+        "summary": "Eliminar una página (soft delete)",
+        "tags": [
+          "Pages"
+        ]
+      }
+    },
+    "/api/v1/pages/reorder": {
+      "patch": {
+        "description": "Actualiza el orden de visualización de múltiples páginas a la vez",
+        "operationId": "PagesController_reorder",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "description": "ID del usuario que reordena",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Array de objetos con id y nuevo order",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "pages": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "number",
+                          "example": 1
+                        },
+                        "order": {
+                          "type": "number",
+                          "example": 5
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Páginas reordenadas exitosamente"
+          },
+          "404": {
+            "description": "Una o más páginas no encontradas"
+          }
+        },
+        "summary": "Reordenar páginas",
+        "tags": [
+          "Pages"
+        ]
+      }
+    },
+    "/api/v1/roles": {
+      "post": {
+        "description": "Crea un rol con sus páginas asociadas. Base del sistema de permisos.",
+        "operationId": "RolesController_create",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "description": "ID del usuario que crea el rol",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRoleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Rol creado exitosamente"
+          },
+          "400": {
+            "description": "Datos inválidos o páginas no existen"
+          },
+          "409": {
+            "description": "Ya existe un rol con ese nombre"
+          }
+        },
+        "summary": "Crear un nuevo rol",
+        "tags": [
+          "Roles"
+        ]
+      },
+      "get": {
+        "description": "Lista paginada de roles con filtros opcionales",
+        "operationId": "RolesController_findAll",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Número de página",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Cantidad de resultados por página",
+            "schema": {
+              "example": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "isActive",
+            "required": false,
+            "in": "query",
+            "description": "Filtrar por estado activo/inactivo",
+            "schema": {
+              "example": true,
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "Buscar por nombre de rol",
+            "schema": {
+              "example": "admin",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de roles obtenida exitosamente"
+          }
+        },
+        "summary": "Obtener todos los roles",
+        "tags": [
+          "Roles"
+        ]
+      }
+    },
+    "/api/v1/roles/stats": {
+      "get": {
+        "description": "Retorna estadísticas: total, activos, inactivos, roles más asignados",
+        "operationId": "RolesController_getStats",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Estadísticas obtenidas exitosamente"
+          }
+        },
+        "summary": "Obtener estadísticas de roles",
+        "tags": [
+          "Roles"
+        ]
+      }
+    },
+    "/api/v1/roles/user/{userId}": {
+      "get": {
+        "description": "Lista todos los roles asignados a un usuario específico",
+        "operationId": "RolesController_findRolesByUser",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "description": "ID del usuario",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Roles del usuario obtenidos exitosamente"
+          },
+          "404": {
+            "description": "Usuario no encontrado"
+          }
+        },
+        "summary": "Obtener roles de un usuario",
+        "tags": [
+          "Roles"
+        ]
+      }
+    },
+    "/api/v1/roles/{id}": {
+      "get": {
+        "description": "Retorna los detalles de un rol incluyendo sus páginas asociadas",
+        "operationId": "RolesController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID del rol",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Rol encontrado"
+          },
+          "404": {
+            "description": "Rol no encontrado"
+          }
+        },
+        "summary": "Obtener un rol por ID",
+        "tags": [
+          "Roles"
+        ]
+      },
+      "patch": {
+        "description": "Actualiza los datos de un rol incluyendo sus páginas asociadas",
+        "operationId": "RolesController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID del rol",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "description": "ID del usuario que actualiza",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateRoleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Rol actualizado exitosamente"
+          },
+          "404": {
+            "description": "Rol no encontrado"
+          },
+          "409": {
+            "description": "Nombre ya existe en otro rol"
+          }
+        },
+        "summary": "Actualizar un rol",
+        "tags": [
+          "Roles"
+        ]
+      },
+      "delete": {
+        "description": "Desactiva un rol cambiando su estado isActive a false. No elimina físicamente el registro.",
+        "operationId": "RolesController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID del rol",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "description": "ID del usuario que elimina",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Rol desactivado exitosamente"
+          },
+          "404": {
+            "description": "Rol no encontrado"
+          }
+        },
+        "summary": "Eliminar un rol (soft delete)",
+        "tags": [
+          "Roles"
+        ]
+      }
+    },
+    "/api/v1/roles/{id}/pages": {
+      "post": {
+        "description": "Asigna o reemplaza las páginas asociadas a un rol. Útil para gestionar permisos.",
+        "operationId": "RolesController_assignPages",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID del rol",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "replace",
+            "required": false,
+            "in": "query",
+            "description": "Si true, reemplaza todas las páginas. Si false, agrega nuevas.",
+            "schema": {
+              "example": true,
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "description": "ID del usuario que asigna",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Array de IDs de páginas",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "pageIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "number"
+                    },
+                    "example": [
+                      1,
+                      2,
+                      3
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Páginas asignadas exitosamente"
+          },
+          "404": {
+            "description": "Rol no encontrado"
+          }
+        },
+        "summary": "Asignar páginas a un rol",
+        "tags": [
+          "Roles"
+        ]
+      }
+    },
+    "/api/v1/sdk-tokens/clients": {
+      "post": {
+        "operationId": "SdkTokensController_createClient",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSdkClientDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Cliente creado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SdkClientResponseDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Cliente con ese nombre ya existe"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Crear un nuevo cliente SDK",
+        "tags": [
+          "SDK Tokens"
+        ]
+      },
+      "get": {
+        "operationId": "SdkTokensController_getAllClients",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Lista de clientes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SdkClientResponseDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Obtener todos los clientes SDK",
+        "tags": [
+          "SDK Tokens"
+        ]
+      }
+    },
+    "/api/v1/sdk-tokens/clients/{id}": {
+      "get": {
+        "operationId": "SdkTokensController_getClientById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Client ID",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detalles del cliente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SdkClientWithTokensResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Cliente no encontrado"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Obtener cliente por ID con sus tokens",
+        "tags": [
+          "SDK Tokens"
+        ]
+      },
+      "patch": {
+        "operationId": "SdkTokensController_updateClient",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Client ID",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSdkClientDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Cliente actualizado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SdkClientResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Cliente no encontrado"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Actualizar cliente SDK",
+        "tags": [
+          "SDK Tokens"
+        ]
+      },
+      "delete": {
+        "operationId": "SdkTokensController_deleteClient",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Client ID",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cliente eliminado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Cliente eliminado exitosamente"
+                    },
+                    "id": {
+                      "type": "number",
+                      "example": 1
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Cliente no encontrado"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Eliminar cliente SDK (y sus tokens en cascada)",
+        "tags": [
+          "SDK Tokens"
+        ]
+      }
+    },
+    "/api/v1/sdk-tokens/generate": {
+      "post": {
+        "description": "⚠️ El token completo solo se muestra una vez. Guárdalo de forma segura.",
+        "operationId": "SdkTokensController_generateToken",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSdkTokenDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Token generado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SdkTokenResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Cliente no encontrado o inactivo"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Generar un nuevo token SDK",
+        "tags": [
+          "SDK Tokens"
+        ]
+      }
+    },
+    "/api/v1/sdk-tokens/tokens/client/{clientId}": {
+      "get": {
+        "operationId": "SdkTokensController_getClientTokens",
+        "parameters": [
+          {
+            "name": "clientId",
+            "required": true,
+            "in": "path",
+            "description": "Client ID",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de tokens del cliente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SdkTokenResponseDto"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Cliente no encontrado"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Obtener todos los tokens de un cliente",
+        "tags": [
+          "SDK Tokens"
+        ]
+      }
+    },
+    "/api/v1/sdk-tokens/tokens/{id}": {
+      "delete": {
+        "operationId": "SdkTokensController_revokeToken",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Token ID",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Token revocado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Token revocado exitosamente"
+                    },
+                    "id": {
+                      "type": "number",
+                      "example": 1
+                    },
+                    "tokenPrefix": {
+                      "type": "string",
+                      "example": "znt_a1b2c3d4..."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Token no encontrado"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Revocar token (desactivar)",
+        "tags": [
+          "SDK Tokens"
+        ]
+      }
+    },
+    "/api/v1/sdk-auth/validate": {
+      "post": {
+        "description": "Valida un token SDK (en header x-sdk-token o body) y devuelve información del cliente asociado.",
+        "operationId": "SdkAuthController_validateToken",
+        "parameters": [
+          {
+            "name": "x-sdk-token",
+            "required": false,
+            "in": "header",
+            "description": "Token SDK en cabecera alternativa al body.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SdkTokenValidateRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SdkTokenValidateResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "SDK token invalid or expired"
+          }
+        },
+        "summary": "Validar token SDK",
+        "tags": [
+          "Auth – SDK"
+        ]
+      }
+    },
+    "/api/v1/sdk-auth/exchange": {
+      "post": {
+        "description": "Intercambia un token SDK válido por un accessToken JWT corto pensado para el SDK.",
+        "operationId": "SdkAuthController_exchangeToken",
+        "parameters": [
+          {
+            "name": "x-sdk-token",
+            "required": false,
+            "in": "header",
+            "description": "Token SDK en cabecera alternativa al body.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SdkTokenExchangeRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SdkTokenExchangeResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "SDK token invalid or expired"
+          }
+        },
+        "summary": "Intercambiar token SDK por JWT",
+        "tags": [
+          "Auth – SDK"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Zenit Backend API",
+    "description": "API de mapas, capas, auth de usuario, auth SDK y manejo de tokens SDK para la plataforma Zenit.",
+    "version": "1.0.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "access-token": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http",
+        "in": "header",
+        "description": "Token de acceso para endpoints protegidos."
+      }
+    },
+    "schemas": {
+      "CreateUserDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateUserDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "LoginRequestDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "User email",
+            "example": "user@example.com"
+          },
+          "password": {
+            "type": "string",
+            "description": "User password",
+            "example": "P@ssw0rd!"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "UserSummaryDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "description": "User identifier",
+            "example": 1
+          },
+          "email": {
+            "type": "string",
+            "description": "Email address",
+            "example": "user@example.com"
+          },
+          "roles": {
+            "description": "Roles associated to the user",
+            "example": [
+              "admin"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "employeeCode": {
+            "type": "string",
+            "description": "Employee code if available"
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "roles"
+        ]
+      },
+      "LoginResponseDto": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "description": "Access token (JWT)",
+            "example": "jwt.token"
+          },
+          "refreshToken": {
+            "type": "string",
+            "description": "Refresh token (JWT)",
+            "example": "jwt.refresh"
+          },
+          "user": {
+            "description": "Authenticated user data",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/UserSummaryDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "accessToken",
+          "refreshToken",
+          "user"
+        ]
+      },
+      "RefreshRequestDto": {
+        "type": "object",
+        "properties": {
+          "refresh_token": {
+            "type": "string",
+            "description": "Refresh token",
+            "example": "jwt.refresh"
+          },
+          "refreshToken": {
+            "type": "string",
+            "description": "Refresh token",
+            "example": "jwt.refresh"
+          }
+        }
+      },
+      "RefreshResponseDto": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "description": "Access token (JWT)",
+            "example": "jwt.token"
+          },
+          "refreshToken": {
+            "type": "string",
+            "description": "Refresh token (JWT)",
+            "example": "jwt.refresh"
+          }
+        },
+        "required": [
+          "accessToken",
+          "refreshToken"
+        ]
+      },
+      "MeResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "description": "User identifier",
+            "example": 1
+          },
+          "email": {
+            "type": "string",
+            "description": "Email address",
+            "example": "user@example.com"
+          },
+          "roles": {
+            "description": "Roles associated to the user",
+            "example": [
+              "admin"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "employeeCode": {
+            "type": "string",
+            "description": "Employee code if available"
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "roles"
+        ]
+      },
+      "ValidateResponseDto": {
+        "type": "object",
+        "properties": {
+          "valid": {
+            "type": "boolean",
+            "description": "Indicates if the access token is valid"
+          }
+        },
+        "required": [
+          "valid"
+        ]
+      },
+      "UploadLayerDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Layer name",
+            "example": "Puntos de Interés - Zona 10",
+            "minLength": 3,
+            "maxLength": 200
+          },
+          "description": {
+            "type": "string",
+            "description": "Layer description",
+            "example": "Puntos de interés relevantes en la Zona 10 de Guatemala"
+          },
+          "isPublic": {
+            "type": "boolean",
+            "description": "Whether the layer is public",
+            "example": false,
+            "default": false
+          },
+          "style": {
+            "type": "object",
+            "description": "Layer styling configuration (JSON)",
+            "example": {
+              "fillColor": "#ff0000",
+              "fillOpacity": 0.5,
+              "strokeColor": "#000000",
+              "strokeWidth": 2
+            }
+          },
+          "userId": {
+            "type": "number",
+            "description": "User ID",
+            "example": "1"
+          },
+          "createdBy": {
+            "type": "number",
+            "description": "User ID",
+            "example": "1"
+          },
+          "mapId": {
+            "type": "number",
+            "description": "Map ID to associate this layer with",
+            "example": 1
+          },
+          "displayOrder": {
+            "type": "number",
+            "description": "Display order in the map (if mapId is provided)",
+            "example": 0,
+            "default": 0
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "UpdateLayerDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Layer name",
+            "example": "Updated Layer Name"
+          },
+          "description": {
+            "type": "string",
+            "description": "Layer description"
+          },
+          "isPublic": {
+            "type": "boolean",
+            "description": "Whether the layer is public"
+          },
+          "style": {
+            "type": "object",
+            "description": "Layer styling configuration"
+          },
+          "mapId": {
+            "type": "object",
+            "description": "Map ID to associate this layer with. Use null to remove association.",
+            "example": 1,
+            "nullable": true
+          }
+        }
+      },
+      "CreateMapDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Map name",
+            "example": "Mapa de Operaciones - Zona 10",
+            "minLength": 3,
+            "maxLength": 200
+          },
+          "description": {
+            "type": "string",
+            "description": "Map description",
+            "example": "Mapa principal para operaciones en la Zona 10 de Guatemala"
+          },
+          "webmapItemId": {
+            "type": "string",
+            "description": "ArcGIS WebMap Item ID (required only for arcgis map type)",
+            "example": "a1b2c3d4e5f6g7h8i9j0",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "mapTypeId": {
+            "type": "integer",
+            "description": "Map type ID (references map_types table)",
+            "example": 1
+          },
+          "isDefault": {
+            "type": "boolean",
+            "description": "Whether this is the default map",
+            "example": false,
+            "default": false
+          },
+          "isPublic": {
+            "type": "boolean",
+            "description": "Whether this map can be accessed publicly (for embeds)",
+            "example": false,
+            "default": false
+          },
+          "settings": {
+            "type": "object",
+            "description": "Map settings and configuration (JSON)",
+            "example": {
+              "basemap": "streets",
+              "zoom": 12,
+              "center": [
+                -90.5069,
+                14.6349
+              ],
+              "showAttribution": true
+            }
+          }
+        },
+        "required": [
+          "name",
+          "mapTypeId"
+        ]
+      },
+      "UpdateMapDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateMapLayerDto": {
+        "type": "object",
+        "properties": {
+          "mapId": {
+            "type": "number",
+            "description": "Map ID",
+            "example": 1
+          },
+          "layerId": {
+            "type": "number",
+            "description": "Layer ID",
+            "example": 5
+          },
+          "displayOrder": {
+            "type": "number",
+            "description": "Display order (lower numbers appear first)",
+            "example": 0,
+            "default": 0
+          },
+          "isVisible": {
+            "type": "boolean",
+            "description": "Whether the layer is visible on the map",
+            "example": true,
+            "default": true
+          },
+          "opacity": {
+            "type": "number",
+            "description": "Layer opacity (0.0 to 1.0)",
+            "example": 1,
+            "default": 1
+          },
+          "layerConfig": {
+            "type": "object",
+            "description": "Additional layer configuration (JSON)",
+            "example": {
+              "minZoom": 5,
+              "maxZoom": 18,
+              "interactive": true
+            }
+          },
+          "createdBy": {
+            "type": "number",
+            "description": "User ID who is adding the layer",
+            "example": 1
+          }
+        },
+        "required": [
+          "mapId",
+          "layerId",
+          "createdBy"
+        ]
+      },
+      "UpdateMapLayerDto": {
+        "type": "object",
+        "properties": {
+          "displayOrder": {
+            "type": "number",
+            "description": "Display order (lower numbers appear first)",
+            "example": 0
+          },
+          "isVisible": {
+            "type": "boolean",
+            "description": "Whether the layer is visible on the map",
+            "example": true
+          },
+          "opacity": {
+            "type": "number",
+            "description": "Layer opacity (0.0 to 1.0)",
+            "example": 0.8
+          },
+          "layerConfig": {
+            "type": "object",
+            "description": "Additional layer configuration (JSON)"
+          }
+        }
+      },
+      "CreatePageDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Nombre de la página",
+            "example": "Dashboard Principal",
+            "minLength": 3,
+            "maxLength": 100
+          },
+          "description": {
+            "type": "string",
+            "description": "Descripción de la página",
+            "example": "Panel principal con métricas y estadísticas"
+          },
+          "url": {
+            "type": "string",
+            "description": "URL de la página (debe iniciar con /)",
+            "example": "/dashboard",
+            "pattern": "^/[a-zA-Z0-9/_-]*$"
+          },
+          "icon": {
+            "type": "string",
+            "description": "Icono de la página (nombre del icono o clase CSS)",
+            "example": "dashboard",
+            "maxLength": 100
+          },
+          "order": {
+            "type": "number",
+            "description": "Orden de visualización de la página (mayor = más arriba)",
+            "example": 1,
+            "default": 0,
+            "minimum": 0
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Si la página está activa",
+            "example": true,
+            "default": true
+          },
+          "roleIds": {
+            "description": "IDs de los roles que tendrán acceso a esta página",
+            "example": [
+              1,
+              2,
+              3
+            ],
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          }
+        },
+        "required": [
+          "name",
+          "url"
+        ]
+      },
+      "UpdatePageDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Nombre de la página",
+            "example": "Dashboard Principal",
+            "minLength": 3,
+            "maxLength": 100
+          },
+          "description": {
+            "type": "string",
+            "description": "Descripción de la página",
+            "example": "Panel principal con métricas y estadísticas"
+          },
+          "url": {
+            "type": "string",
+            "description": "URL de la página (debe iniciar con /)",
+            "example": "/dashboard",
+            "pattern": "^/[a-zA-Z0-9/_-]*$"
+          },
+          "icon": {
+            "type": "string",
+            "description": "Icono de la página (nombre del icono o clase CSS)",
+            "example": "dashboard",
+            "maxLength": 100
+          },
+          "order": {
+            "type": "number",
+            "description": "Orden de visualización de la página (mayor = más arriba)",
+            "example": 1,
+            "default": 0,
+            "minimum": 0
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Si la página está activa",
+            "example": true,
+            "default": true
+          },
+          "roleIds": {
+            "description": "IDs de los roles que tendrán acceso a esta página",
+            "example": [
+              1,
+              2,
+              3
+            ],
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          }
+        }
+      },
+      "CreateRoleDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Nombre del rol (solo minúsculas y guiones bajos)",
+            "example": "admin",
+            "minLength": 3,
+            "maxLength": 50,
+            "pattern": "^[a-z_]+$"
+          },
+          "description": {
+            "type": "string",
+            "description": "Descripción del rol",
+            "example": "Administrador del sistema con acceso completo"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Si el rol está activo",
+            "example": true,
+            "default": true
+          },
+          "pageIds": {
+            "description": "IDs de las páginas que tendrá acceso este rol",
+            "example": [
+              1,
+              2,
+              3
+            ],
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "UpdateRoleDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Nombre del rol (solo minúsculas y guiones bajos)",
+            "example": "admin",
+            "minLength": 3,
+            "maxLength": 50,
+            "pattern": "^[a-z_]+$"
+          },
+          "description": {
+            "type": "string",
+            "description": "Descripción del rol",
+            "example": "Administrador del sistema con acceso completo"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Si el rol está activo",
+            "example": true,
+            "default": true
+          },
+          "pageIds": {
+            "description": "IDs de las páginas que tendrá acceso este rol",
+            "example": [
+              1,
+              2,
+              3
+            ],
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
+          }
+        }
+      },
+      "CreateSdkClientDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Client name (unique identifier)",
+            "example": "Mobile App Client",
+            "minLength": 3,
+            "maxLength": 200
+          },
+          "description": {
+            "type": "string",
+            "description": "Client description or purpose",
+            "example": "SDK client for mobile application integration"
+          },
+          "email": {
+            "type": "string",
+            "description": "Contact email for the client",
+            "example": "developer@example.com"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Estado inicial del cliente (por defecto activo)",
+            "example": true
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "SdkClientResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "description": "ID del cliente SDK",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "description": "Nombre del cliente SDK",
+            "example": "Mobile App Client"
+          },
+          "description": {
+            "type": "string",
+            "description": "Descripción del cliente"
+          },
+          "email": {
+            "type": "string",
+            "description": "Email de contacto",
+            "example": "developer@example.com"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Estado activo",
+            "example": true
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Fecha de creación",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "Fecha de actualización",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "isActive",
+          "createdAt"
+        ]
+      },
+      "SdkTokenResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "description": "ID del token SDK",
+            "example": 1
+          },
+          "clientId": {
+            "type": "number",
+            "description": "ID del cliente dueño del token",
+            "example": 3
+          },
+          "tokenPrefix": {
+            "type": "string",
+            "description": "Prefijo del token para referencia",
+            "example": "znt_a1b2c3d4..."
+          },
+          "label": {
+            "type": "string",
+            "description": "Etiqueta o nombre amigable",
+            "example": "Integración mobile"
+          },
+          "scopes": {
+            "description": "Scopes asociados (reservado para futuro uso)",
+            "example": [
+              "maps:read"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "rateLimit": {
+            "type": "number",
+            "description": "Límite de peticiones por hora",
+            "example": 1000
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Indica si el token está activo",
+            "example": true
+          },
+          "expiresAt": {
+            "type": "string",
+            "description": "Fecha de expiración",
+            "format": "date-time"
+          },
+          "lastUsedAt": {
+            "type": "string",
+            "description": "Última vez que se usó el token",
+            "format": "date-time"
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Fecha de creación",
+            "format": "date-time"
+          },
+          "rawToken": {
+            "type": "string",
+            "description": "Token crudo generado (solo visible al crearlo)",
+            "example": "znt_a1b2c3d4e5f6..."
+          },
+          "warning": {
+            "type": "string",
+            "description": "Mensaje de advertencia al generar el token",
+            "example": "Guarda este token de forma segura. No podrás verlo de nuevo."
+          },
+          "clientName": {
+            "type": "string",
+            "description": "Nombre del cliente asociado",
+            "example": "Mobile App Client"
+          }
+        },
+        "required": [
+          "id",
+          "clientId",
+          "tokenPrefix",
+          "isActive",
+          "createdAt"
+        ]
+      },
+      "SdkClientWithTokensResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "description": "ID del cliente SDK",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "description": "Nombre del cliente SDK",
+            "example": "Mobile App Client"
+          },
+          "description": {
+            "type": "string",
+            "description": "Descripción del cliente"
+          },
+          "email": {
+            "type": "string",
+            "description": "Email de contacto",
+            "example": "developer@example.com"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Estado activo",
+            "example": true
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Fecha de creación",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "Fecha de actualización",
+            "format": "date-time"
+          },
+          "tokens": {
+            "description": "Tokens asociados al cliente",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SdkTokenResponseDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "isActive",
+          "createdAt"
+        ]
+      },
+      "UpdateSdkClientDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Client name (unique identifier)",
+            "example": "Mobile App Client",
+            "minLength": 3,
+            "maxLength": 200
+          },
+          "description": {
+            "type": "string",
+            "description": "Client description or purpose",
+            "example": "SDK client for mobile application integration"
+          },
+          "email": {
+            "type": "string",
+            "description": "Contact email for the client",
+            "example": "developer@example.com"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Whether the client is active",
+            "example": true
+          }
+        }
+      },
+      "CreateSdkTokenDto": {
+        "type": "object",
+        "properties": {
+          "clientId": {
+            "type": "number",
+            "description": "Client ID that owns this token",
+            "example": 1
+          },
+          "rateLimit": {
+            "type": "number",
+            "description": "Requests per hour limit",
+            "example": 1000,
+            "default": 1000,
+            "minimum": 1,
+            "maximum": 100000
+          },
+          "expiresAt": {
+            "type": "string",
+            "description": "Token expiration date (ISO 8601 format)",
+            "example": "2026-12-31T23:59:59Z"
+          }
+        },
+        "required": [
+          "clientId"
+        ]
+      },
+      "SdkTokenValidateRequestDto": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "Token SDK en formato crudo. Si no se envía aquí, puede enviarse por cabecera X-SDK-Token.",
+            "example": "znt_a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4"
+          }
+        }
+      },
+      "SdkTokenValidateResponseDto": {
+        "type": "object",
+        "properties": {
+          "valid": {
+            "type": "boolean",
+            "description": "Indica si el token es válido"
+          },
+          "clientId": {
+            "type": "object",
+            "description": "ID del cliente asociado",
+            "example": 1
+          },
+          "clientName": {
+            "type": "string",
+            "description": "Nombre del cliente",
+            "example": "Mobile App Client"
+          },
+          "scopes": {
+            "description": "Scopes asociados al token (reservado para futuro uso)",
+            "example": [
+              "maps:read"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "reason": {
+            "type": "string",
+            "description": "Razón del fallo cuando valid es false",
+            "example": "SDK_TOKEN_INVALID"
+          }
+        },
+        "required": [
+          "valid"
+        ]
+      },
+      "SdkTokenExchangeRequestDto": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "Token SDK. Si se omite, el servicio intentará tomarlo del header X-SDK-Token.",
+            "example": "znt_a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4"
+          }
+        }
+      },
+      "SdkTokenExchangeResponseDto": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "description": "JWT de corta duración"
+          },
+          "expiresIn": {
+            "type": "number",
+            "description": "Tiempo de expiración en segundos",
+            "example": 900
+          },
+          "tokenType": {
+            "type": "string",
+            "description": "Tipo de token",
+            "example": "Bearer",
+            "enum": [
+              "Bearer"
+            ]
+          }
+        },
+        "required": [
+          "accessToken",
+          "expiresIn",
+          "tokenType"
+        ]
+      }
+    }
+  }
+}
