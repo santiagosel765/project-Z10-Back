@@ -59,7 +59,7 @@ export class SdkTokensService {
       name: dto.name,
       description: dto.description,
       email: dto.email,
-      isActive: true,
+      isActive: dto.isActive ?? true,
     });
 
     await this.sdkClientRepository.save(client);
@@ -71,6 +71,7 @@ export class SdkTokensService {
       email: client.email,
       isActive: client.isActive,
       createdAt: client.createdAt,
+      updatedAt: client.updatedAt,
     };
   }
 
@@ -116,7 +117,9 @@ export class SdkTokensService {
       updatedAt: client.updatedAt,
       tokens: client.tokens.map((token) => ({
         id: token.id,
+        clientId: token.clientId,
         tokenPrefix: token.tokenPrefix,
+        scopes: [],
         rateLimit: token.rateLimit,
         isActive: token.isActive,
         expiresAt: token.expiresAt,
@@ -218,9 +221,11 @@ export class SdkTokensService {
     return {
       id: sdkToken.id,
       token: token, // ⚠️ Solo se muestra aquí, nunca más
+      rawToken: token,
       tokenPrefix: sdkToken.tokenPrefix,
       clientId: client.id,
       clientName: client.name,
+      scopes: [],
       rateLimit: sdkToken.rateLimit,
       expiresAt: sdkToken.expiresAt,
       createdAt: sdkToken.createdAt,
@@ -341,7 +346,9 @@ export class SdkTokensService {
 
     return tokens.map((token) => ({
       id: token.id,
+      clientId: token.clientId,
       tokenPrefix: token.tokenPrefix,
+      scopes: [],
       rateLimit: token.rateLimit,
       isActive: token.isActive,
       expiresAt: token.expiresAt,

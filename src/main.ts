@@ -9,11 +9,14 @@ import {
 } from './common/filters';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as fs from 'fs';
+import * as path from 'path';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.setGlobalPrefix(envs.apiPrefix);
+  const globalPrefix = envs.apiPrefix?.replace(/^\/+/, '') || 'api/v1';
+  app.setGlobalPrefix(globalPrefix);
 
   app.enableCors({
     origin: envs.corsOrigin,
@@ -31,14 +34,41 @@ async function bootstrap() {
     }),
   );
   
-  const config = new DocumentBuilder()
-    .setTitle('Cats example')
-    .setDescription('The cats API description')
-    .setVersion('1.0')
-    .addTag('cats')
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('Zenit Backend API')
+    .setDescription(
+      'API de mapas, capas, auth de usuario, auth SDK y manejo de tokens SDK para la plataforma Zenit.',
+    )
+    .setVersion('1.0.0')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        in: 'header',
+        description: 'Token de acceso para endpoints protegidos.',
+      },
+      'access-token',
+    )
     .build();
-  const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, documentFactory);
+
+  const document = SwaggerModule.createDocument(app, swaggerConfig, {
+    ignoreGlobalPrefix: false,
+  });
+
+  const docsPath = path.join(process.cwd(), 'docs');
+  if (!fs.existsSync(docsPath)) {
+    fs.mkdirSync(docsPath, { recursive: true });
+  }
+
+  fs.writeFileSync(
+    path.join(docsPath, 'zenit-backend-openapi.json'),
+    JSON.stringify(document, null, 2),
+  );
+
+  SwaggerModule.setup('docs', app, document, {
+    customSiteTitle: 'Zenit Backend API Docs',
+  });
 
   app.useGlobalFilters(
     new ValidationExceptionFilter(),
