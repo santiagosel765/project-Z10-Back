@@ -16,6 +16,8 @@ import {
   ApiCreatedResponse,
   ApiParam,
   ApiBearerAuth,
+  ApiNotFoundResponse,
+  ApiConflictResponse,
 } from '@nestjs/swagger';
 import { SdkTokensService } from './sdk-tokens.service';
 import { CreateSdkClientDto } from './dto/create-sdk-client.dto';
@@ -41,7 +43,7 @@ export class SdkTokensController {
     description: 'Cliente creado exitosamente',
     type: SdkClientResponseDto,
   })
-  @ApiOkResponse({ status: 409, description: 'Cliente con ese nombre ya existe' })
+  @ApiConflictResponse({ description: 'Cliente con ese nombre ya existe' })
   createClient(@Body() createSdkClientDto: CreateSdkClientDto) {
     return this.sdkTokensService.createClient(createSdkClientDto);
   }
@@ -64,7 +66,7 @@ export class SdkTokensController {
     description: 'Detalles del cliente',
     type: SdkClientWithTokensResponseDto,
   })
-  @ApiOkResponse({ status: 404, description: 'Cliente no encontrado' })
+  @ApiNotFoundResponse({ description: 'Cliente no encontrado' })
   getClientById(@Param('id', ParseIntPipe) id: number) {
     return this.sdkTokensService.getClientById(id);
   }
@@ -76,7 +78,7 @@ export class SdkTokensController {
     description: 'Cliente actualizado exitosamente',
     type: SdkClientResponseDto,
   })
-  @ApiOkResponse({ status: 404, description: 'Cliente no encontrado' })
+  @ApiNotFoundResponse({ description: 'Cliente no encontrado' })
   updateClient(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateSdkClientDto: UpdateSdkClientDto,
@@ -97,7 +99,7 @@ export class SdkTokensController {
       },
     },
   })
-  @ApiOkResponse({ status: 404, description: 'Cliente no encontrado' })
+  @ApiNotFoundResponse({ description: 'Cliente no encontrado' })
   deleteClient(@Param('id', ParseIntPipe) id: number) {
     return this.sdkTokensService.deleteClient(id);
   }
@@ -112,7 +114,7 @@ export class SdkTokensController {
     description: 'Token generado exitosamente',
     type: SdkTokenResponseDto,
   })
-  @ApiOkResponse({ status: 404, description: 'Cliente no encontrado o inactivo' })
+  @ApiNotFoundResponse({ description: 'Cliente no encontrado o inactivo' })
   generateToken(@Body() createSdkTokenDto: CreateSdkTokenDto) {
     return this.sdkTokensService.generateToken(createSdkTokenDto);
   }
@@ -125,7 +127,7 @@ export class SdkTokensController {
     type: SdkTokenResponseDto,
     isArray: true,
   })
-  @ApiOkResponse({ status: 404, description: 'Cliente no encontrado' })
+  @ApiNotFoundResponse({ description: 'Cliente no encontrado' })
   getClientTokens(@Param('clientId', ParseIntPipe) clientId: number) {
     return this.sdkTokensService.getClientTokens(clientId);
   }
@@ -144,7 +146,7 @@ export class SdkTokensController {
       },
     },
   })
-  @ApiOkResponse({ status: 404, description: 'Token no encontrado' })
+  @ApiNotFoundResponse({ description: 'Token no encontrado' })
   revokeToken(@Param('id', ParseIntPipe) id: number) {
     return this.sdkTokensService.revokeToken(id);
   }

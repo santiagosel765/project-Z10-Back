@@ -46,7 +46,7 @@ export class SdkAuthController {
   }
 
   @Post('validate')
-  @Throttle(30, 60)
+  @Throttle({ default: { limit: 30, ttl: 60 } })
   @ApiOperation({
     summary: 'Validar token SDK',
     description:
@@ -82,7 +82,7 @@ export class SdkAuthController {
   }
 
   @Post('exchange')
-  @Throttle(20, 60)
+  @Throttle({ default: { limit: 20, ttl: 60 } })
   @ApiOperation({
     summary: 'Intercambiar token SDK por JWT',
     description:
