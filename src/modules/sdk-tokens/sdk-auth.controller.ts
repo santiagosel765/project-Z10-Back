@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiBody,
+  ApiHeader,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -23,7 +24,7 @@ import {
   SdkTokenValidateResponseDto,
 } from './dto/sdk-token-validate.dto';
 
-@ApiTags('SDK Auth')
+@ApiTags('Auth – SDK')
 @Controller('sdk-auth')
 export class SdkAuthController {
   constructor(
@@ -49,9 +50,14 @@ export class SdkAuthController {
   @ApiOperation({
     summary: 'Validar token SDK',
     description:
-      'Pensado para ser llamado por zenit-sdk. Valida el token usando el prefijo y bcrypt.',
+      'Valida un token SDK (en header x-sdk-token o body) y devuelve información del cliente asociado.',
   })
-  @ApiBody({ type: SdkTokenValidateRequestDto })
+  @ApiHeader({
+    name: 'x-sdk-token',
+    required: false,
+    description: 'Token SDK en cabecera alternativa al body.',
+  })
+  @ApiBody({ type: SdkTokenValidateRequestDto, required: false })
   @ApiOkResponse({ type: SdkTokenValidateResponseDto })
   @ApiUnauthorizedResponse({ description: 'SDK token invalid or expired' })
   async validateToken(
@@ -78,11 +84,16 @@ export class SdkAuthController {
   @Post('exchange')
   @Throttle(20, 60)
   @ApiOperation({
-    summary: 'Intercambiar token SDK por un JWT corto',
+    summary: 'Intercambiar token SDK por JWT',
     description:
-      'Endpoint pensado para zenit-sdk. Devuelve un JWT de corta duración si el token SDK es válido.',
+      'Intercambia un token SDK válido por un accessToken JWT corto pensado para el SDK.',
   })
-  @ApiBody({ type: SdkTokenExchangeRequestDto })
+  @ApiHeader({
+    name: 'x-sdk-token',
+    required: false,
+    description: 'Token SDK en cabecera alternativa al body.',
+  })
+  @ApiBody({ type: SdkTokenExchangeRequestDto, required: false })
   @ApiOkResponse({ type: SdkTokenExchangeResponseDto })
   @ApiUnauthorizedResponse({ description: 'SDK token invalid or expired' })
   async exchangeToken(

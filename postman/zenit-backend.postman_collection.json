@@ -4,10 +4,11 @@
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
-    {
-      "key": "baseUrl",
-      "value": "http://localhost:3000/api/v1"
-    }
+    { "key": "baseUrl", "value": "http://localhost:3200/api/v1" },
+    { "key": "accessToken", "value": "" },
+    { "key": "refreshToken", "value": "" },
+    { "key": "sdkToken", "value": "" },
+    { "key": "sdkAccessToken", "value": "" }
   ],
   "item": [
     {
@@ -18,12 +19,7 @@
           "request": {
             "method": "POST",
             "header": [
-              {
-                "key": "Content-Type",
-                "name": "Content-Type",
-                "type": "text",
-                "value": "application/json"
-              }
+              { "key": "Content-Type", "name": "Content-Type", "type": "text", "value": "application/json" }
             ],
             "body": {
               "mode": "raw",
@@ -31,13 +27,8 @@
             },
             "url": {
               "raw": "{{baseUrl}}/auth/login",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "login"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
             }
           },
           "response": [],
@@ -46,12 +37,12 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test('Status code is 200', function () {",
-                  "    pm.response.to.have.status(200);",
+                  "pm.test('Status code is 200/201', function () {",
+                  "  pm.expect([200, 201]).to.include(pm.response.code);",
                   "});",
-                  "const json = pm.response.json();",
-                  "pm.environment.set('accessToken', json.accessToken);",
-                  "pm.environment.set('refreshToken', json.refreshToken);"
+                  "const data = pm.response.json();",
+                  "if (data.accessToken) { pm.environment.set('accessToken', data.accessToken); }",
+                  "if (data.refreshToken) { pm.environment.set('refreshToken', data.refreshToken); }"
                 ],
                 "type": "text/javascript"
               }
@@ -63,21 +54,12 @@
           "request": {
             "method": "GET",
             "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{accessToken}}",
-                "type": "text"
-              }
+              { "key": "Authorization", "value": "Bearer {{accessToken}}", "type": "text" }
             ],
             "url": {
               "raw": "{{baseUrl}}/auth/me",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "me"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "me"]
             }
           },
           "response": [],
@@ -86,9 +68,7 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test('Status code is 200', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});"
+                  "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });"
                 ],
                 "type": "text/javascript"
               }
@@ -100,21 +80,12 @@
           "request": {
             "method": "GET",
             "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{accessToken}}",
-                "type": "text"
-              }
+              { "key": "Authorization", "value": "Bearer {{accessToken}}", "type": "text" }
             ],
             "url": {
               "raw": "{{baseUrl}}/auth/validate",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "validate"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "validate"]
             }
           },
           "response": [],
@@ -123,13 +94,9 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test('Status code is 200', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
+                  "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
                   "const json = pm.response.json();",
-                  "pm.test('Token is valid', function () {",
-                  "    pm.expect(json.valid).to.be.true;",
-                  "});"
+                  "pm.test('Token is valid', function () { pm.expect(json.valid).to.be.true; });"
                 ],
                 "type": "text/javascript"
               }
@@ -141,21 +108,12 @@
           "request": {
             "method": "POST",
             "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{refreshToken}}",
-                "type": "text"
-              }
+              { "key": "Authorization", "value": "Bearer {{refreshToken}}", "type": "text" }
             ],
             "url": {
               "raw": "{{baseUrl}}/auth/refresh",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "refresh"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "refresh"]
             }
           },
           "response": [],
@@ -164,12 +122,10 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test('Status code is 200', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "const json = pm.response.json();",
-                  "pm.environment.set('accessToken', json.accessToken);",
-                  "pm.environment.set('refreshToken', json.refreshToken);"
+                  "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+                  "const data = pm.response.json();",
+                  "if (data.accessToken) { pm.environment.set('accessToken', data.accessToken); }",
+                  "if (data.refreshToken) { pm.environment.set('refreshToken', data.refreshToken); }"
                 ],
                 "type": "text/javascript"
               }
@@ -186,27 +142,11 @@
           "request": {
             "method": "POST",
             "header": [
-              {
-                "key": "Content-Type",
-                "name": "Content-Type",
-                "type": "text",
-                "value": "application/json"
-              }
+              { "key": "Content-Type", "name": "Content-Type", "type": "text", "value": "application/json" },
+              { "key": "x-sdk-token", "value": "{{sdkToken}}", "type": "text" }
             ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"token\": \"{{sdkToken}}\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/sdk-auth/validate",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "sdk-auth",
-                "validate"
-              ]
-            }
+            "body": { "mode": "raw", "raw": "{\n  \"token\": \"{{sdkToken}}\"\n}" },
+            "url": { "raw": "{{baseUrl}}/sdk-auth/validate", "host": ["{{baseUrl}}"], "path": ["sdk-auth", "validate"] }
           },
           "response": [],
           "event": [
@@ -214,13 +154,9 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test('Status code is 200', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "const json = pm.response.json();",
-                  "pm.test('SDK token is valid', function () {",
-                  "    pm.expect(json.valid).to.be.true;",
-                  "});"
+                  "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+                  "const data = pm.response.json();",
+                  "pm.test('SDK token is valid', function () { pm.expect(data.valid).to.be.true; });"
                 ],
                 "type": "text/javascript"
               }
@@ -232,27 +168,11 @@
           "request": {
             "method": "POST",
             "header": [
-              {
-                "key": "Content-Type",
-                "name": "Content-Type",
-                "type": "text",
-                "value": "application/json"
-              }
+              { "key": "Content-Type", "name": "Content-Type", "type": "text", "value": "application/json" },
+              { "key": "x-sdk-token", "value": "{{sdkToken}}", "type": "text" }
             ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"token\": \"{{sdkToken}}\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/sdk-auth/exchange",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "sdk-auth",
-                "exchange"
-              ]
-            }
+            "body": { "mode": "raw", "raw": "{\n  \"token\": \"{{sdkToken}}\"\n}" },
+            "url": { "raw": "{{baseUrl}}/sdk-auth/exchange", "host": ["{{baseUrl}}"], "path": ["sdk-auth", "exchange"] }
           },
           "response": [],
           "event": [
@@ -260,14 +180,10 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test('Status code is 200', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});",
-                  "const json = pm.response.json();",
-                  "pm.environment.set('sdkAccessToken', json.accessToken);",
-                  "if (json.expiresIn) {",
-                  "    pm.environment.set('sdkAccessTokenExpiresIn', json.expiresIn);",
-                  "}"
+                  "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+                  "const data = pm.response.json();",
+                  "if (data.accessToken) { pm.environment.set('sdkAccessToken', data.accessToken); }",
+                  "if (data.expiresIn) { pm.environment.set('sdkAccessTokenExpiresIn', data.expiresIn); }"
                 ],
                 "type": "text/javascript"
               }
@@ -279,21 +195,107 @@
           "request": {
             "method": "GET",
             "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{sdkAccessToken}}",
-                "type": "text"
-              }
+              { "key": "Authorization", "value": "Bearer {{sdkAccessToken}}", "type": "text" }
+            ],
+            "url": { "raw": "{{baseUrl}}/auth/me", "host": ["{{baseUrl}}"], "path": ["auth", "me"] }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": { "exec": ["pm.test('Status code is 200', function () { pm.response.to.have.status(200); });"], "type": "text/javascript" }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "SDK Tokens",
+      "item": [
+        {
+          "name": "POST Crear cliente SDK",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}", "type": "text" },
+              { "key": "Content-Type", "value": "application/json", "type": "text" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Client Demo\",\n  \"description\": \"Cliente de pruebas\",\n  \"email\": \"dev@example.com\"\n}" },
+            "url": { "raw": "{{baseUrl}}/sdk-tokens/clients", "host": ["{{baseUrl}}"], "path": ["sdk-tokens", "clients"] }
+          },
+          "response": []
+        },
+        {
+          "name": "GET Listar clientes SDK",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}", "type": "text" }
+            ],
+            "url": { "raw": "{{baseUrl}}/sdk-tokens/clients", "host": ["{{baseUrl}}"], "path": ["sdk-tokens", "clients"] }
+          },
+          "response": []
+        },
+        {
+          "name": "GET Obtener cliente SDK",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}", "type": "text" }
             ],
             "url": {
-              "raw": "{{baseUrl}}/auth/me",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "me"
-              ]
+              "raw": "{{baseUrl}}/sdk-tokens/clients/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["sdk-tokens", "clients", ":id"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH Actualizar cliente SDK",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}", "type": "text" },
+              { "key": "Content-Type", "value": "application/json", "type": "text" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"description\": \"Descripción actualizada\",\n  \"isActive\": true\n}" },
+            "url": {
+              "raw": "{{baseUrl}}/sdk-tokens/clients/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["sdk-tokens", "clients", ":id"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE Eliminar cliente SDK",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}", "type": "text" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/sdk-tokens/clients/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["sdk-tokens", "clients", ":id"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST Generar token SDK",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}", "type": "text" },
+              { "key": "Content-Type", "value": "application/json", "type": "text" }
+            ],
+            "body": { "mode": "raw", "raw": "{\n  \"clientId\": 1,\n  \"rateLimit\": 1000\n}" },
+            "url": {
+              "raw": "{{baseUrl}}/sdk-tokens/generate",
+              "host": ["{{baseUrl}}"],
+              "path": ["sdk-tokens", "generate"]
             }
           },
           "response": [],
@@ -302,14 +304,45 @@
               "listen": "test",
               "script": {
                 "exec": [
-                  "pm.test('Status code is 200', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});"
+                  "pm.test('Status code is 200/201', function () { pm.expect([200, 201]).to.include(pm.response.code); });",
+                  "const data = pm.response.json();",
+                  "if (data.rawToken) { pm.environment.set('sdkToken', data.rawToken); }",
+                  "if (data.token) { pm.environment.set('sdkToken', data.token); }"
                 ],
                 "type": "text/javascript"
               }
             }
           ]
+        },
+        {
+          "name": "GET Listar tokens por cliente",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}", "type": "text" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/sdk-tokens/tokens/client/:clientId",
+              "host": ["{{baseUrl}}"],
+              "path": ["sdk-tokens", "tokens", "client", ":clientId"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE Revocar token SDK",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}", "type": "text" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/sdk-tokens/tokens/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["sdk-tokens", "tokens", ":id"]
+            }
+          },
+          "response": []
         }
       ]
     },
@@ -321,36 +354,11 @@
           "request": {
             "method": "GET",
             "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{accessToken}}",
-                "type": "text"
-              }
+              { "key": "Authorization", "value": "Bearer {{accessToken}}", "type": "text" }
             ],
-            "url": {
-              "raw": "{{baseUrl}}/maps",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "maps"
-              ]
-            }
+            "url": { "raw": "{{baseUrl}}/maps", "host": ["{{baseUrl}}"], "path": ["maps"] }
           },
-          "response": [],
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('Status code is 200', function () {",
-                  "    pm.response.to.have.status(200);",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ]
+          "response": []
         }
       ]
     }

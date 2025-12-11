@@ -48,14 +48,15 @@ const baseCookieOpts = {
 const accessCookieOpts = baseCookieOpts;
 const refreshCookieOpts = baseCookieOpts;
 
-@ApiTags('Auth')
+@ApiTags('Auth – Usuario')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @ApiOperation({
     summary: 'User login',
-    description: 'Authenticate user and issue access/refresh tokens.',
+    description:
+      'Autentica usuario y emite accessToken/refreshToken para llamadas protegidas.',
   })
   @ApiBody({ type: LoginRequestDto })
   @ApiOkResponse({ type: LoginResponseDto })
@@ -80,7 +81,10 @@ export class AuthController {
   }
 
   @SkipThrottle()
-  @ApiOperation({ summary: 'Refresh tokens' })
+  @ApiOperation({
+    summary: 'Refresh tokens',
+    description: 'Regenera accessToken y refreshToken a partir de un refresh token válido.',
+  })
   @ApiOkResponse({ type: RefreshResponseDto })
   @ApiUnauthorizedResponse({ description: 'Invalid or expired refresh token' })
   @ApiBody({
@@ -129,7 +133,10 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: 'Get current authenticated user' })
+  @ApiOperation({
+    summary: 'Usuario autenticado',
+    description: 'Obtiene los datos del usuario autenticado mediante JWT.',
+  })
   @ApiOkResponse({ type: MeResponseDto })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @Get('me')
@@ -143,7 +150,10 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: 'Validate current access token' })
+  @ApiOperation({
+    summary: 'Validar access token',
+    description: 'Valida el access token actual.',
+  })
   @ApiOkResponse({ type: ValidateResponseDto })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @Get('validate')
